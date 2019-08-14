@@ -2,6 +2,34 @@ syntax = "proto3";
 
 import "github.com/kubernetes-csi/csi-proxy/api/errors.proto";
 
+service GeneralStorageCSIProxyService {
+    // Rescan refreshes the host storage cache.
+    rpc Rescan(RescanRequest) returns (RescanResponse) {}
+
+    // PartitionDisk initializes and partitions a disk device (if the disk has not
+    // been partitioned already) and returns the resulting volume object's GUID.
+    rpc PartitionDisk(PartitionDiskRequest) returns (PartitionDiskResponse) {}
+
+    // FormatVolume formats a volume with the provided file system.
+    // The resulting volume is mounted at the requested global staging path.
+    rpc FormatVolume(FormatVolumeRequest) returns (FormatVolumeResponse) {}
+
+    // ListDiskLocations returns locations <Adapter, Bus, Target, LUN ID> of all disk devices enumerated by Windows.
+    rpc ListDiskLocations(ListDiskLocationsRequest) returns (ListDiskLocationsResponse) {}
+
+    // ListDiskIDs returns all IDs (from IOCTL_STORAGE_QUERY_PROPERTY) of all disk devices enumerated by Windows.
+    rpc ListDiskIDs(ListDiskIDsRequest) returns (ListDiskIDsResponse) {}
+
+    // ListDiskVolumeMappings returns a map of all disk devices and volumes GUIDs
+    rpc ListDiskVolumeMappings(ListDiskVolumeMappingsRequest) returns (ListDiskVolumeMappingsResponse) {}
+
+    // ResizeVolume performs resizing of the partition and file system for a block based volume
+    rpc ResizeVolume(ResizeVolumeRequest) returns (ResizeVolumeResponse) {}
+
+    // DismountVolume gracefully dismounts a volume
+    rpc DismountVolume(DismountVolumeRequest) returns (DismountVolumeResponse) {}
+}
+
 message RescanRequest {
     // Intentionally empty.
 }

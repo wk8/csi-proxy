@@ -2,6 +2,11 @@ syntax = "proto3";
 
 import "github.com/kubernetes-csi/csi-proxy/api/errors.proto";
 
+service SmbCSIProxyService {
+    // MountSMBShare mounts a remote share over SMB on the host at the requested global staging path.
+    rpc MountSMBShare(MountSMBShareRequest) returns (MountSMBShareResponse) {}
+}
+
 message MountSMBShareRequest {
     // A remote SMB share to mount
     // All unicode characters allowed in SMB server name specifications are

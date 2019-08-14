@@ -2,6 +2,21 @@ syntax = "proto3";
 
 import "github.com/kubernetes-csi/csi-proxy/api/errors.proto";
 
+service FileSystemCSIProxyService {
+    // PathExists checks if the given path exists on the host.
+    rpc PathExists(PathExistsRequest) returns (PathExistsResponse) {}
+
+    // Mkdir creates a directory at the requested path on the host.
+    rpc Mkdir(MkdirRequest) returns (MkdirResponse) {}
+
+    // Rmdir removes the directory at the requested path on the host.
+    // This may be used for unlinking a symlink created through LinkVolume.
+    rpc Rmdir(RmdirRequest) returns (RmdirResponse) {}
+
+    // LinkPath invokes mklink on the global staging path of a volume linking it to a path within a container.
+    rpc LinkPath(LinkPathRequest) returns (LinkPathResponse) {}
+}
+
 message PathExistsRequest {
      // The path to check in the host filesystem.
      string path = 1;

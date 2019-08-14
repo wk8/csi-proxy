@@ -2,6 +2,46 @@ syntax = "proto3";
 
 import "github.com/kubernetes-csi/csi-proxy/api/errors.proto";
 
+service IscsiCSIProxyService {
+    // MountISCSILun mounts a remote LUN over iSCSI and returns the OS disk device number.
+    rpc MountISCSILun(MountISCSILunRequest) returns (MountISCSILunResponse) {}
+
+    // ReportIScsiSendTargetPortals retrieves a list of static target portals that the iSCSI initiator
+    // service uses to perform automatic discovery with SendTarget requests.
+    // see https://docs.microsoft.com/en-us/windows/desktop/api/iscsidsc/nf-iscsidsc-reportiscsisendtargetportalsexw
+    rpc ReportIScsiSendTargetPortals(ReportIScsiSendTargetPortalsRequest) returns (ReportIScsiSendTargetPortalsResponse) {}
+
+    // AddIScsiSendTargetPortal adds a static target portal to the list of target portals to which the iSCSI initiator service transmits SendTargets requests.
+    // see https://docs.microsoft.com/en-us/windows/desktop/api/iscsidsc/nf-iscsidsc-addiscsisendtargetportalw
+    rpc AddIScsiSendTargetPortal(AddIScsiSendTargetPortalRequest) returns (AddIScsiSendTargetPortalResponse) {}
+
+    // RemoveIScsiSendTargetPortal removes a portal from the list of portals to which the iSCSI initiator service sends
+    // SendTargets requests for target discovery.
+    // see https://docs.microsoft.com/en-us/windows/desktop/api/iscsidsc/nf-iscsidsc-removeiscsisendtargetportalw
+    rpc RemoveIScsiSendTargetPortal(RemoveIScsiSendTargetPortalRequest) returns (RemoveIScsiSendTargetPortalResponse) {}
+
+    // ReportIScsiTargets retrieves the list of targets that the iSCSI initiator service has discovered.
+    // see https://docs.microsoft.com/en-us/windows/desktop/api/iscsidsc/nf-iscsidsc-reportiscsitargetsw
+    rpc ReportIScsiTargets(ReportIScsiTargetsRequest) returns (ReportIScsiTargetsResponse) {}
+
+    // LoginIscsiTarget establishes a full featured login session with the indicated target.
+    // see https://docs.microsoft.com/en-us/windows/desktop/api/iscsidsc/nf-iscsidsc-loginiscsitargetw
+    rpc LoginIscsiTarget(LoginIscsiTargetRequest) returns (LoginIscsiTargetResponse) {}
+
+    // LogoutIScsiTarget closes the specified login session.
+    // see https://docs.microsoft.com/en-us/windows/desktop/api/iscsidsc/nf-iscsidsc-logoutiscsitarget
+    rpc LogoutIScsiTarget(LogoutIScsiTargetRequest) returns (LogoutIScsiTargetResponse) {}
+
+    // GetIScsiSessionList retrieves the list of active iSCSI sessions.
+    // see https://docs.microsoft.com/en-us/windows/desktop/api/iscsidsc/nf-iscsidsc-getiscsisessionlistw
+    rpc GetIScsiSessionList(GetIScsiSessionListRequest) returns (GetIScsiSessionListResponse) {}
+
+    // GetDevicesForIScsiSession retrieves information about the devices associated with an existing session.
+    // see https://docs.microsoft.com/en-us/windows/win32/api/iscsidsc/nf-iscsidsc-getdevicesforiscsisessionw
+    rpc GetDevicesForIScsiSession(GetDevicesForIScsiSessionRequest) returns (GetDevicesForIScsiSessionResponse) {}
+}
+
+
 enum IscsiAuthType {
     NoAuth = 0;
     OneWayCHAP = 1;
