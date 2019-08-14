@@ -1,6 +1,8 @@
 syntax = "proto3";
 
-import "github.com/kubernetes-csi/csi-proxy/api/errors.proto";
+package api;
+
+import "errors.proto";
 
 service IscsiCSIProxyService {
     // MountISCSILun mounts a remote LUN over iSCSI and returns the OS disk device number.

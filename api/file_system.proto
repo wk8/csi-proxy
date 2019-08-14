@@ -1,6 +1,8 @@
 syntax = "proto3";
 
-import "github.com/kubernetes-csi/csi-proxy/api/errors.proto";
+package api;
+
+import "errors.proto";
 
 service FileSystemCSIProxyService {
     // PathExists checks if the given path exists on the host.

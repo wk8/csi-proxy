@@ -51,6 +51,7 @@ func (s *IscsiServer) GetDevicesForIScsiSession(ctx context.Context, request *pb
 	return nil, nil
 }
 
+// TODO wkpo
 func main() {
 	grpcServer := grpc.NewServer()
 	pb.RegisterIscsiCSIProxyServiceServer(grpcServer, &IscsiServer{})

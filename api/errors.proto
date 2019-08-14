@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-// package docker.swarmkit.v1;
+package api;
 
 // WindowsApiError details errors yielded by direct system calls to the Windows API.
 message WindowsApiError {
