@@ -12,6 +12,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kr/pty v1.1.8 // indirect
+	github.com/pkg/errors v0.8.1
 	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/wk8/go-win-iscsidsc v0.0.0-20190724224204-4e4ffe953c77
