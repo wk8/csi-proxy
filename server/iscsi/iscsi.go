@@ -1,21 +1,19 @@
-package server
+package iscsi
 
 import (
 	"context"
-
-	"google.golang.org/grpc"
 
 	pb "github.com/kubernetes-csi/csi-proxy/api"
 )
 
 // TODO wkpo see https://blog.golang.org/generate ? add a //go:generate comment?
 
-// TODO wkpo en fait...!!! separer les serveurs en differents types! un
-
 type IscsiServer struct {
 }
 
+// TODO wkpo NEXT! lo que pasa quand on renvoie une error?
 func (s *IscsiServer) MountISCSILun(ctx context.Context, request *pb.MountISCSILunRequest) (*pb.MountISCSILunResponse, error) {
+	// TODO wkpo
 	return nil, nil
 }
 
@@ -49,10 +47,4 @@ func (s *IscsiServer) GetIScsiSessionList(ctx context.Context, request *pb.GetIS
 
 func (s *IscsiServer) GetDevicesForIScsiSession(ctx context.Context, request *pb.GetDevicesForIScsiSessionRequest) (*pb.GetDevicesForIScsiSessionResponse, error) {
 	return nil, nil
-}
-
-// TODO wkpo
-func main() {
-	grpcServer := grpc.NewServer()
-	pb.RegisterIscsiCSIProxyServiceServer(grpcServer, &IscsiServer{})
 }
