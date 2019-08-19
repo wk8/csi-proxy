@@ -147,13 +147,20 @@ func PortalInfoFromGRPC(in *pb.IscsiPortalInfo) (*iscsidsc.PortalInfo, error) {
 		return nil, err
 	}
 
-	return &iscsidsc.PortalInfo{
-		Portal:              *portal,
+	out := &iscsidsc.PortalInfo{
 		InitiatorName:       in.InitiatorName,
 		InitiatorPortNumber: in.InitiatorPortNumber,
 		SecurityFlags:       iscsidsc.SecurityFlags(in.SecurityFlags),
-		LoginOptions:        *LoginOptionsFromGRPC(in.LoginOptions),
-	}, nil
+	}
+
+	if portal != nil {
+		out.Portal = *portal
+	}
+	if loginOptions := LoginOptionsFromGRPC(in.LoginOptions); loginOptions != nil {
+		out.LoginOptions = *loginOptions
+	}
+
+	return out, nil
 }
 
 func SessionIDToGRPC(in *iscsidsc.SessionID) *pb.IscsiID {
@@ -235,14 +242,19 @@ func ConnectionInfoFromGRPC(in *pb.IscsiConnectionInfo) (*iscsidsc.ConnectionInf
 	}
 	copy(cid[:], in.CID)
 
-	return &iscsidsc.ConnectionInfo{
-		ConnectionID:     *ConnectionIDFromGRPC(in.ConnectionId),
+	out := &iscsidsc.ConnectionInfo{
 		InitiatorAddress: in.InitiatorAddress,
 		TargetAddress:    in.TargetAddress,
 		InitiatorSocket:  initiatorSocket,
 		TargetSocket:     targetSocket,
 		CID:              cid,
-	}, nil
+	}
+
+	if connectionID := ConnectionIDFromGRPC(in.ConnectionId); connectionID != nil {
+		out.ConnectionID = *connectionID
+	}
+
+	return out, nil
 }
 
 func SessionInfoToGRPC(in *iscsidsc.SessionInfo) *pb.IscsiSessionInfo {
@@ -300,13 +312,144 @@ func SessionInfoFromGRPC(in *pb.IscsiSessionInfo) (*iscsidsc.SessionInfo, error)
 	}
 	copy(tsid[:], in.TSID)
 
-	return &iscsidsc.SessionInfo{
-		// TODO wkpo next from here
-	}, nil
+	out := &iscsidsc.SessionInfo{
+		InitiatorName:  in.InitiatorName,
+		TargetNodeName: in.TargetNodeName,
+		TargetName:     in.TargetName,
+		ISID:           isid,
+		TSID:           tsid,
+		Connections:    connections,
+	}
+
+	if sessionID := SessionIDFromGRPC(in.SessionId); sessionID != nil {
+		out.SessionID = *sessionID
+	}
+
+	return out, nil
 }
 
 func wrapSessionInfoError(in *pb.IscsiSessionInfo, err error) error {
 	return errors.Wrapf(err, "Error when deserializing session ID %v", in.SessionId)
+}
+
+func ScsiAddressToGRPC(in *iscsidsc.ScsiAddress) *pb.ScsiAddress {
+	if in == nil {
+		return nil
+	}
+
+	return &pb.ScsiAddress{
+		PortNumber: uint32(in.PortNumber),
+		PathId:     uint32(in.PathID),
+		TargetId:   uint32(in.TargetID),
+		Lun:        uint32(in.Lun),
+	}
+}
+
+func ScsiAddressFromGRPC(in *pb.ScsiAddress) (*iscsidsc.ScsiAddress, error) {
+	if in == nil {
+		return nil, nil
+	}
+
+	portNumber, err := uint32ToUint8(in.PortNumber, "ScsiAddress PortNumber")
+	if err != nil {
+		return nil, err
+	}
+	pathId, err := uint32ToUint8(in.PathId, "ScsiAddress PathId")
+	if err != nil {
+		return nil, err
+	}
+	targetId, err := uint32ToUint8(in.TargetId, "ScsiAddress TargetId")
+	if err != nil {
+		return nil, err
+	}
+	lun, err := uint32ToUint8(in.Lun, "ScsiAddress Lun")
+	if err != nil {
+		return nil, err
+	}
+
+	return &iscsidsc.ScsiAddress{
+		PortNumber: portNumber,
+		PathID:     pathId,
+		TargetID:   targetId,
+		Lun:        lun,
+	}, nil
+}
+
+func StorageDeviceNumberToGRPC(in *iscsidsc.StorageDeviceNumber) *pb.IscsiStorageDeviceNumber {
+	if in == nil {
+		return nil
+	}
+
+	return &pb.IscsiStorageDeviceNumber{
+		DeviceType:      in.DeviceType,
+		DeviceNumber:    in.DeviceNumber,
+		PartitionNumber: in.PartitionNumber,
+	}
+}
+
+func StorageDeviceNumberFromGRPC(in *pb.IscsiStorageDeviceNumber) *iscsidsc.StorageDeviceNumber {
+	if in == nil {
+		return nil
+	}
+
+	return &iscsidsc.StorageDeviceNumber{
+		DeviceType:      in.DeviceType,
+		DeviceNumber:    in.DeviceNumber,
+		PartitionNumber: in.PartitionNumber,
+	}
+}
+
+func DeviceToGRPC(in *iscsidsc.Device) *pb.IscsiDevice {
+	if in == nil {
+		return nil
+	}
+
+	return &pb.IscsiDevice{
+		InitiatorName:       in.InitiatorName,
+		TargetName:          in.TargetName,
+		ScsiAddress:         ScsiAddressToGRPC(&in.ScsiAddress),
+		DeviceInterfaceType: in.DeviceInterfaceType.String(),
+		DeviceInterfaceName: in.DeviceInterfaceName,
+		LegacyName:          in.LegacyName,
+		StorageDeviceNumber: StorageDeviceNumberToGRPC(&in.StorageDeviceNumber),
+		DeviceInstance:      in.DeviceInstance,
+	}
+}
+
+func DeviceFromGRPC(in *pb.IscsiDevice) (*iscsidsc.Device, error) {
+	if in == nil {
+		return nil, nil
+	}
+
+	scsiAddress, err := ScsiAddressFromGRPC(in.ScsiAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	out := &iscsidsc.Device{
+		InitiatorName:       in.InitiatorName,
+		TargetName:          in.TargetName,
+		DeviceInterfaceName: in.DeviceInterfaceName,
+		LegacyName:          in.LegacyName,
+		DeviceInstance:      in.DeviceInstance,
+	}
+
+	if scsiAddress != nil {
+		out.ScsiAddress = *scsiAddress
+	}
+	if storageDeviceNumber := StorageDeviceNumberFromGRPC(in.StorageDeviceNumber); storageDeviceNumber != nil {
+		out.StorageDeviceNumber = *storageDeviceNumber
+	}
+
+	return out, nil
+}
+
+func uint32ToUint8(in uint32, name string) (uint8, error) {
+	if in > math.MaxUint8 {
+		return 0, fmt.Errorf("%s cannot be greater than %d, got %d", name, math.MaxUint8, in)
+	}
+
+	return uint8(in), nil
 }
 
 func uint32SocketToUint16(in uint32) (uint16, error) {

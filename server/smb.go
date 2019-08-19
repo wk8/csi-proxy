@@ -8,8 +8,6 @@ import (
 
 // TODO wkpo see https://blog.golang.org/generate ? add a //go:generate comment?
 
-// TODO wkpo en fait...!!! separer les serveurs en differents types! un
-
 type SmbServer struct {
 }
 
