@@ -1,0 +1,31 @@
+// TODO wkpo comment!
+
+syntax = "proto3";
+
+package v0alpha2;
+
+service TestCSIProxyService {
+    // ComputeDouble computes the double of the input. Real smart stuff!
+    rpc ComputeDouble(ComputeDoubleRequest) returns (ComputeDoubleResponse) {}
+}
+
+message ComputeDoubleRequest{
+    // deprecated in favor of the input64 field
+    int32 input32 = 1;
+
+    int64 input64 = 2;
+}
+
+message ComputeDoubleResponse{
+    // that field is used to reply to clients giving a 32 bits input
+    int32 response32 = 1;
+
+    // that field is used to reply to clients giving a 64 bits input, starting from v0alpha2
+    int64 response = 2;
+
+    // we didn't realize it at the beginning, but these things can overflow! in that case
+    // we need to notify the caller that something went wrong
+    // that got introduced in v0alpha2
+    bool success = 3;
+    string error_message = 4;
+}

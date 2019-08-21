@@ -13,7 +13,7 @@ const (
 
 // TODO wkpo integration test on starting to use another field!!
 
-type Deprecation struct {
+type DeprecatedField struct {
 	// if a soft deprecated field is used, a warning will be logged
 	// if a hard deprecated field is used, the call will fail
 	DeprecationType DeprecationType
@@ -34,31 +34,53 @@ type Definition struct {
 
 	// IsNewRequest should return true iff handling this request was introduced in this version.
 	// message will be one of the top-level request message.
-	IsNewRequest func(request proto.Message) bool
+	IsNewRequest func(requestMsg proto.Message) bool
 
 	// IsDeprecatedRequest should return true iff we started deprecating this request in this version;
 	// if it returns (true, SoftDeprecation), then we'll still process the request, with a warning.
 	// it it returns (true, HardDeprecation), then the request won't be processed any more.
-	IsDeprecatedRequest func(request proto.Message) (bool, DeprecationType)
+	IsDeprecatedRequest func(requestMsg proto.Message) (bool, DeprecationType)
 
-	// Deprecations should list deprecated fields used by the message, if any.
+	// DeprecatedFields should list deprecated fields used by the message, if any.
 	// It should not transform the message in any way.
-	// TODO wkpo enforce that ^ ?
-	// Deprecations are guaranteed to be called in reverse chronological order.
-	Deprecations func(request proto.Message) []Deprecation
+	// DeprecatedFields are guaranteed to be called in reverse chronological order.
+	DeprecatedFields func(requestMsg proto.Message) []DeprecatedField
 
-	// ResponseTransformer should take a top-level request message, and transform it to fit older versions
-	// requests; by e.g. resetting to their null value fields introduced in this version, or copying
-	// values from old fields to new ones.
-	// TODO wkpo vrai ca? the order?
-	// RequestTransformers are guaranteed to be called in chronological order.
-	RequestTransformer func(request proto.Message)
+	// UpRequestTransformer should take a top-level request message from the previous API version
+	// and do a best effort to turn it into a valid message for the newer API version;
+	// e.g. by copying values from old fields to new ones.
+	// This will be used by the server when receiving a request from an older API version.
+	// This is really just a best effort, API handlers will still be told which API versions
+	// a given message belongs to, and can thus handle breaking API changes this way.
+	// UpRequestTransformers are guaranteed to be called in chronological order.
+	UpRequestTransformer func(requestMsg proto.Message)
 
-	// ResponseTransformer should take a top-level response message, and transform it to fit older versions
-	// responses; by e.g. resetting to their null value fields introduced in this version, or copying
-	// values from new fields to old ones.
-	// TODO wkpo vrai ca? the order?
-	// ResponseTransformers are guaranteed to be called in reverse chronological order.
-	// Request and response can be safely assumed to be of corresponding types.
-	ResponseTransformer func(request, response proto.Message)
+	// DownRequestTransformer should take a top-level request message from this API version
+	// and do a best effort to turn it into a valid message for the previous API version;
+	// e.g. by copying values from new fields to old ones or setting to their null values
+	// fields introduced in this version.
+	// This will be used by the client when sending a request to an older API version.
+	// This is really just a best effort, the client will still be told which API version
+	// the server is running, and can thus handle breaking API changes this way.
+	// DownRequestTransformers are guaranteed to be called in reverse chronological order.
+	DownRequestTransformer func(requestMsg proto.Message)
+
+	// UpResponseTransformer should take a top-level response message from the previous API version
+	// and do a best effort to turn it into a valid message for the newer API version;
+	// e.g. by copying values from old fields to new ones.
+	// This will be used by the client when receiving a response from a server running an older API version.
+	// This is really just a best effort, the client will still be told which API version
+	// the server is running, and can thus handle breaking API changes this way.
+	// UpResponseTransformers are guaranteed to be called in chronological order.
+	UpResponseTransformer func(requestMsg, responseMsg proto.Message)
+
+	// DownResponseTransformer should take a top-level response message from this API version
+	// and do a best effort to turn it into a valid message for the previous API version;
+	// e.g. by copying values from new fields to old ones or setting to their null values
+	// fields introduced in this version.
+	// This will be used by the server when handling a request from an older API version.
+	// This is really just a best effort, API handlers will still be told which API versions
+	// a given message belongs to, and can thus handle breaking API changes this way.
+	// DownResponseTransformers are guaranteed to be called in chronological order.
+	DownResponseTransformer func(requestMsg, responseMsg proto.Message)
 }

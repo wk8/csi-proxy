@@ -68,15 +68,16 @@ func (e DeprecatedRequest) Error() string {
 	return fmt.Sprintf("this request got deprecated in version: %v < %v", e.deprecatedAt, e.version)
 }
 
-// HandleRequest is meant to be called with a top-level request message, and:
+// HandleServerRequest is meant to be called by the server with a top-level request message.
 // 1. errors out if that API version is unknown (and returns an UnknownVersion error),
 //    or if that request message did not exist yet for that API version (and returns a RequestDoesNotExistAtThisVersion error)
-// 2. returns the lists of soft and hard deprecations for that API version and all earlier ones; note that it will
+// 2. returns the lists of soft and hard deprecated fields for that API version and all earlier ones; note that it will
 //    stop as soon as soon as it encounters a hard deprecation.
-// 3. if there are no hard deprecations, also proceeds to reset to their null values all fields that got introduced
-//    in later versions, and did not exist yet as of this version.
+// 3. if there are no hard deprecations, then proceeds to run UpRequestTransformers in order.
+// On top of deprecated fields, also returns a boolean indicating whether this request is marked as
+// deprecated for this API version.
 // TODO wkpo break up in smaller funcs?
-func (h *Handler) HandleRequest(request proto.Message, version Version) (softDeprecations []Deprecation, hardDeprecations []Deprecation, deprecatedRequest bool, err error) {
+func (h *Handler) HandleRequest(request proto.Message, version Version) (softDeprecations []DeprecatedField, hardDeprecations []DeprecatedField, deprecatedRequest bool, err error) {
 	versionIndex, present := h.versionIndexes[version.String()]
 	if !present {
 		err = UnknownVersion{version: version}
@@ -118,13 +119,13 @@ func (h *Handler) HandleRequest(request proto.Message, version Version) (softDep
 		}
 	}
 
-	// field deprecations
+	// deprecated fields
 	for i := versionIndex; i > 0; i-- {
-		if h.definitions[i].Deprecations == nil {
+		if h.definitions[i].DeprecatedFields == nil {
 			continue
 		}
 
-		for _, deprecation := range h.definitions[i].Deprecations(request) {
+		for _, deprecation := range h.definitions[i].DeprecatedFields(request) {
 			switch deprecation.DeprecationType {
 			case HardDeprecation:
 				hardDeprecations = append(hardDeprecations, deprecation)
@@ -141,18 +142,19 @@ func (h *Handler) HandleRequest(request proto.Message, version Version) (softDep
 		}
 	}
 
-	// run transformations
+	// run UpRequestTransformers
 	for i := versionIndex + 1; i < len(h.definitions); i++ {
-		if h.definitions[i].RequestTransformer != nil {
-			h.definitions[i].RequestTransformer(request)
+		if h.definitions[i].UpRequestTransformer != nil {
+			h.definitions[i].UpRequestTransformer(request)
 		}
 	}
 
 	return
 }
 
-// HandleResponse is meant to be called with top-level request and response message of corresponding types
-// and runs response transformations in reverse chronological order.
+// HandleServerResponse is meant to be called by the server with top-level request and
+// response message of corresponding types and runs DownResponseTransformers in reverse
+// chronological order.
 func (h *Handler) HandleResponse(request, response proto.Message, version Version) error {
 	versionIndex, present := h.versionIndexes[version.String()]
 	if !present {
@@ -160,8 +162,8 @@ func (h *Handler) HandleResponse(request, response proto.Message, version Versio
 	}
 
 	for i := len(h.definitions); i > versionIndex; i-- {
-		if h.definitions[i].ResponseTransformer != nil {
-			h.definitions[i].ResponseTransformer(request, response)
+		if h.definitions[i].DownResponseTransformer != nil {
+			h.definitions[i].DownResponseTransformer(request, response)
 		}
 	}
 

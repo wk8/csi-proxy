@@ -2,7 +2,7 @@
 
 syntax = "proto3";
 
-package api;
+package v0alpha4;
 
 // TODO wkpo double check comments are in sync with code!
 
@@ -10,9 +10,8 @@ package api;
 
 service TestCSIProxyService {
     // ComputeDouble computes the double of the input. Real smart stuff!
-    // We ended up deprecating this API in v0beta1, and dropping it altogether in v0, because it
-    // turned out it wasn't that useful after all... Who could have guessed? Sic transit gloria mundi.
     rpc ComputeDouble(ComputeDoubleRequest) returns (ComputeDoubleResponse) {}
+    // ComputeDouble computes the double of the input. Real smart stuff!
 
     // TellMeAPoem returns a very poetic response.
     // It got added in v0alpha3.
@@ -48,15 +47,8 @@ message ComputeDoubleResponse{
 }
 
 message TellMeAPoemRequest{
-    // starting from v0, the user could specify whether they wanted a title to their poem!
-    bool i_want_a_title = 1;
 }
 
 message TellMeAPoemResponse{
     string poem = 1;
-
-    // in v0, we started giving back a list of lines instead of just a big blob of a poem. So much more readble!
-    repeated string lines = 2;
-
-    string title = 3;
 }

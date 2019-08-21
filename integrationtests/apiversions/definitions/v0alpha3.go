@@ -1,4 +1,4 @@
-package apiversions
+package definitions
 
 import (
 	"github.com/golang/protobuf/proto"
@@ -19,11 +19,11 @@ var v0alpha3 = apiversions.Definition{
 		return false
 	},
 
-	Deprecations: func(requestMsg proto.Message) (deprecations []apiversions.Deprecation) {
+	DeprecatedFields: func(requestMsg proto.Message) (deprecatedFields []apiversions.DeprecatedField) {
 		switch request := requestMsg.(type) {
 		case *pb.ComputeDoubleRequest:
 			if request.Input64 != 0 {
-				deprecations = append(deprecations, apiversions.Deprecation{
+				deprecatedFields = append(deprecatedFields, apiversions.DeprecatedField{
 					DeprecationType: apiversions.SoftDeprecation,
 					FieldName:       "input64",
 					FieldValue:      request.Input64,
@@ -32,15 +32,19 @@ var v0alpha3 = apiversions.Definition{
 			}
 		}
 
-		return deprecations
+		return deprecatedFields
 	},
 
-	RequestTransformer: func(requestMsg proto.Message) {
+	UpRequestTransformer: func(requestMsg proto.Message) {
 		switch request := requestMsg.(type) {
 		case *pb.ComputeDoubleRequest:
 			if request.Input64 != 0 && request.Input == "" {
 				request.Input = strconv.FormatInt(request.Input64, 10)
 			}
 		}
+	},
+
+	DownRequestTransformer: func(requestMsg proto.Message) {
+		// TODO wkpo
 	},
 }
