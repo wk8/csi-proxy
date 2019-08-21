@@ -2,6 +2,7 @@ package apiversions
 
 import (
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/grpc"
 )
 
 type DeprecationType int
@@ -31,6 +32,8 @@ type DeprecatedField struct {
 // TODO wkpo missing deprecated requests alltogether?
 type Definition struct {
 	Version Version
+
+	BuildAndRegisterServers func(*grpc.Server)
 
 	// IsNewRequest should return true iff handling this request was introduced in this version.
 	// message will be one of the top-level request message.

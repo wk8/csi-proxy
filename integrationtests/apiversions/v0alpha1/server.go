@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/Microsoft/go-winio"
@@ -20,7 +21,13 @@ func (s *TestServer) ComputeDouble(ctx context.Context, request *ComputeDoubleRe
 	response := &ComputeDoubleResponse{
 		Response32: 2 * request.Input32,
 	}
-	return response, nil
+
+	var err error
+	if true {
+		err = fmt.Errorf("wkpo bordel error")
+		err = grpc.ErrServerStopped
+	}
+	return response, err
 }
 
 func main() {
