@@ -76,7 +76,7 @@ func (e DeprecatedRequest) Error() string {
 // 3. if there are no hard deprecations, also proceeds to reset to their null values all fields that got introduced
 //    in later versions, and did not exist yet as of this version.
 // TODO wkpo break up in smaller funcs?
-func (h *Handler) HandleRequest(message *proto.Message, version Version) (softDeprecations []Deprecation, hardDeprecations []Deprecation, deprecatedRequest bool, err error) {
+func (h *Handler) HandleRequest(request proto.Message, version Version) (softDeprecations []Deprecation, hardDeprecations []Deprecation, deprecatedRequest bool, err error) {
 	versionIndex, present := h.versionIndexes[version.String()]
 	if !present {
 		err = UnknownVersion{version: version}
@@ -85,7 +85,7 @@ func (h *Handler) HandleRequest(message *proto.Message, version Version) (softDe
 
 	// does this request already exist at this API version?
 	for i := versionIndex + 1; i < len(h.definitions); i++ {
-		if h.definitions[i].IsNewRequest != nil && h.definitions[i].IsNewRequest(message) {
+		if h.definitions[i].IsNewRequest != nil && h.definitions[i].IsNewRequest(request) {
 			err = RequestDoesNotExistAtThisVersion{
 				version:       version,
 				introductedIn: h.definitions[i].Version,
@@ -99,7 +99,7 @@ func (h *Handler) HandleRequest(message *proto.Message, version Version) (softDe
 		if h.definitions[i].IsDeprecatedRequest == nil {
 			continue
 		}
-		isDeprecated, deprecationType := h.definitions[i].IsDeprecatedRequest(message)
+		isDeprecated, deprecationType := h.definitions[i].IsDeprecatedRequest(request)
 
 		if isDeprecated {
 			switch deprecationType {
@@ -124,7 +124,7 @@ func (h *Handler) HandleRequest(message *proto.Message, version Version) (softDe
 			continue
 		}
 
-		for _, deprecation := range h.definitions[i].Deprecations(message) {
+		for _, deprecation := range h.definitions[i].Deprecations(request) {
 			switch deprecation.DeprecationType {
 			case HardDeprecation:
 				hardDeprecations = append(hardDeprecations, deprecation)
@@ -144,16 +144,16 @@ func (h *Handler) HandleRequest(message *proto.Message, version Version) (softDe
 	// run transformations
 	for i := versionIndex + 1; i < len(h.definitions); i++ {
 		if h.definitions[i].RequestTransformer != nil {
-			h.definitions[i].RequestTransformer(message)
+			h.definitions[i].RequestTransformer(request)
 		}
 	}
 
 	return
 }
 
-// HandleResponse is meant to be called with a top-level response message, and runs
-// response transformations in reverse chronological order.
-func (h *Handler) HandleResponse(message *proto.Message, version Version) error {
+// HandleResponse is meant to be called with top-level request and response message of corresponding types
+// and runs response transformations in reverse chronological order.
+func (h *Handler) HandleResponse(request, response proto.Message, version Version) error {
 	versionIndex, present := h.versionIndexes[version.String()]
 	if !present {
 		return UnknownVersion{version: version}
@@ -161,7 +161,7 @@ func (h *Handler) HandleResponse(message *proto.Message, version Version) error 
 
 	for i := len(h.definitions); i > versionIndex; i-- {
 		if h.definitions[i].ResponseTransformer != nil {
-			h.definitions[i].ResponseTransformer(message)
+			h.definitions[i].ResponseTransformer(request, response)
 		}
 	}
 

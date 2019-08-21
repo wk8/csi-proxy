@@ -25,7 +25,7 @@ type Deprecation struct {
 	// If this is a hard deprecation, can be used to give the user a human-readable detailed
 	// explanation.
 	// In any case, this is optional.
-	message string
+	Message string
 }
 
 // TODO wkpo missing deprecated requests alltogether?
@@ -34,30 +34,31 @@ type Definition struct {
 
 	// IsNewRequest should return true iff handling this request was introduced in this version.
 	// message will be one of the top-level request message.
-	IsNewRequest func(message *proto.Message) bool
+	IsNewRequest func(request proto.Message) bool
 
 	// IsDeprecatedRequest should return true iff we started deprecating this request in this version;
 	// if it returns (true, SoftDeprecation), then we'll still process the request, with a warning.
 	// it it returns (true, HardDeprecation), then the request won't be processed any more.
-	IsDeprecatedRequest func(message *proto.Message) (bool, DeprecationType)
+	IsDeprecatedRequest func(request proto.Message) (bool, DeprecationType)
 
 	// Deprecations should list deprecated fields used by the message, if any.
 	// It should not transform the message in any way.
 	// TODO wkpo enforce that ^ ?
 	// Deprecations are guaranteed to be called in reverse chronological order.
-	Deprecations func(*proto.Message) []Deprecation
+	Deprecations func(request proto.Message) []Deprecation
 
 	// ResponseTransformer should take a top-level request message, and transform it to fit older versions
 	// requests; by e.g. resetting to their null value fields introduced in this version, or copying
 	// values from old fields to new ones.
 	// TODO wkpo vrai ca? the order?
 	// RequestTransformers are guaranteed to be called in chronological order.
-	RequestTransformer func(*proto.Message)
+	RequestTransformer func(request proto.Message)
 
 	// ResponseTransformer should take a top-level response message, and transform it to fit older versions
 	// responses; by e.g. resetting to their null value fields introduced in this version, or copying
 	// values from new fields to old ones.
 	// TODO wkpo vrai ca? the order?
 	// ResponseTransformers are guaranteed to be called in reverse chronological order.
-	ResponseTransformer func(*proto.Message)
+	// Request and response can be safely assumed to be of corresponding types.
+	ResponseTransformer func(request, response proto.Message)
 }
