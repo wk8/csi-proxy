@@ -14,7 +14,8 @@ func clientMain() {
 	conn, err := grpc.Dial(`\\.\pipe\csi-proxy-v1alpha1`,
 		grpc.WithContextDialer(func(context context.Context, s string) (net.Conn, error) {
 			return winio.DialPipeContext(context, s)
-		}))
+		}),
+		grpc.WithInsecure())
 	if err != nil {
 		panic(err)
 	}
