@@ -1,0 +1,61 @@
+// TODO wkpo comment!
+
+syntax = "proto3";
+
+package api;
+
+// TODO wkpo double check comments are in sync with code!
+
+// TODO wkpo on devrait faire des integration tests avec un older client, newer server, et vice versa!
+
+service TestCSIProxyService {
+    // ComputeDouble computes the double of the input. Real smart stuff!
+    // We ended up deprecating this API in v0beta1, and dropping it altogether in v0, because it
+    // turned out it wasn't that useful after all... Who could have guessed? Sic transit gloria mundi.
+    rpc ComputeDouble(ComputeDoubleRequest) returns (ComputeDoubleResponse) {}
+
+    // TellMeAPoem returns a very poetic response.
+    // It got added in v0alpha3.
+    rpc TellMeAPoem(TellMeAPoemRequest) returns (TellMeAPoemResponse) {}
+}
+
+message ComputeDoubleRequest{
+    // in version v0alpha1, we just accepted int32s as input
+    int32 input32 = 1;
+
+    // but in version v0alpha1, we figured that we might as well also accept int64s!
+    // that also prompted deprecating the input32 field, which got dropped altogether in v0alpha3.
+    int64 input64 = 2;
+
+    // in version v0alpha3, we thought we could actually accept string inputs: the input would just need
+    // to be parsable by strconv.ParseInt
+    string input = 3;
+}
+
+message ComputeDoubleResponse{
+    // that field is used to reply to clients giving a 32 bits input
+    int32 response32 = 1;
+
+    // that field is used to reply to clients giving a 64 bits or string input
+    int64 response = 2;
+
+    // we didn't realize it at the beginning, but these things can overflow! in that case
+    // we need to notify the caller that something went wrong
+    // that got introduced in v0alpha2
+    bool success = 3;
+    string error_message = 4;
+}
+
+message TellMeAPoemRequest{
+    // starting from v0, the user could specify whether they wanted a title to their poem!
+    bool i_want_a_title = 1;
+}
+
+message TellMeAPoemResponse{
+    string poem = 1;
+
+    // in v0, we started giving back a list of lines instead of just a big blob of a poem. So much more readble!
+    repeated string lines = 2;
+
+    string title = 3;
+}

@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package api;
 
-import "google/protobuf/wrappers.proto";
-
 import "errors.proto";
 
 service IscsiCSIProxyService {

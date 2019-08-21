@@ -13,7 +13,6 @@ type IscsiServer struct {
 
 // TODO wkpo NEXT! lo que pasa quand on renvoie une error?
 func (s *IscsiServer) MountISCSILun(ctx context.Context, request *pb.MountISCSILunRequest) (*pb.MountISCSILunResponse, error) {
-	// TODO wkpo
 	return nil, nil
 }
 
@@ -22,14 +21,17 @@ func (s *IscsiServer) ReportIScsiSendTargetPortals(ctx context.Context, request 
 }
 
 func (s *IscsiServer) AddIScsiSendTargetPortal(ctx context.Context, request *pb.AddIScsiSendTargetPortalRequest) (*pb.AddIScsiSendTargetPortalResponse, error) {
+	request.Descriptor()
 	return nil, nil
 }
 
 func (s *IscsiServer) RemoveIScsiSendTargetPortal(ctx context.Context, request *pb.RemoveIScsiSendTargetPortalRequest) (*pb.RemoveIScsiSendTargetPortalResponse, error) {
+	request.Descriptor()
 	return nil, nil
 }
 
 func (s *IscsiServer) ReportIScsiTargets(ctx context.Context, request *pb.ReportIScsiTargetsRequest) (*pb.ReportIScsiTargetsResponse, error) {
+	request.ProtoMessage()
 	return nil, nil
 }
 
