@@ -33,7 +33,7 @@ type DeprecatedField struct {
 type Definition struct {
 	Version Version
 
-	BuildAndRegisterServers func(grpcServer *grpc.Server, handler *Handler)
+	BuildAndRegisterServers func(grpcServer *grpc.Server, version Version, handler *Handler)
 
 	// IsNewRequest should return true iff handling this request was introduced in this version.
 	// message will be one of the top-level request message.

@@ -140,7 +140,7 @@ func (s *Server) createAndStartGRPCServers(listeners []net.Listener) chan *apiVe
 		grpcServer := grpc.NewServer()
 		s.grpcServers[i] = grpcServer
 
-		definition.BuildAndRegisterServers(grpcServer, s.handler)
+		definition.BuildAndRegisterServers(grpcServer, definition.Version, s.handler)
 
 		go func() {
 			err := grpcServer.Serve(listeners[i])

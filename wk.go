@@ -33,7 +33,7 @@ func main3() {
 // TODO wkpo
 func main2() {
 	grpcServer := grpc.NewServer()
-	pb.RegisterIscsiCSIProxyServiceServer(grpcServer, &iscsi.IscsiServer{})
+	pb.RegisterIscsiCSIProxyServiceServer(grpcServer, &iscsi.Server{})
 
 	listener, err := winio.ListenPipe(`\\.\pipe\csi-proxy-v1alpha1`, nil)
 	if err != nil {

@@ -13,8 +13,8 @@ var v1alpha1Version = apiversions.NewVersion("v1alpha1")
 var V1alpha1 = apiversions.Definition{
 	Version: v1alpha1Version,
 
-	BuildAndRegisterServers: func(grpcServer *grpc.Server, handler *apiversions.Handler) {
-		iscsiServer := &iscsi.IscsiServer{}
+	BuildAndRegisterServers: func(grpcServer *grpc.Server, apiVersion apiversions.Version, handler *apiversions.Handler) {
+		iscsiServer := iscsi.NewServer(apiVersion, handler)
 
 		pb.RegisterIscsiCSIProxyServiceServer(grpcServer, iscsiServer)
 	},
