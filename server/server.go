@@ -20,6 +20,7 @@ type Server struct {
 	grpcServers []*grpc.Server
 }
 
+// TODO wkpo comment?
 func NewServer(definitions ...apiversions.Definition) (*Server, error) {
 	handler := &apiversions.Handler{}
 	if err := handler.Register(definitions...); err != nil {

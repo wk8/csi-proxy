@@ -11,9 +11,8 @@ const (
 
 	// CsiProxyNamedPipePrefix is the prefix for the named pipes the proxy creates.
 	// The suffix will be the version, e.g. "\\.\\pipe\\csi-proxy-v1", "\\.\\pipe\\csi-proxy-v2alpha1", etc.
+	// TODO wkpo need public?
 	CsiProxyNamedPipePrefix = "csi-proxy-"
-
-	// KnownApiVersions are the versions of the CSI proxy API that the current revision of the repo
 )
 
 func PipePathForApiVersion(apiVersion apiversions.Version) string {
