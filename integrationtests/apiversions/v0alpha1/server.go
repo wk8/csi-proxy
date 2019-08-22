@@ -1,4 +1,4 @@
-package main
+package v0alpha1
 
 import (
 	"context"
@@ -14,7 +14,7 @@ import (
 // TODO wkpo see https://blog.golang.org/generate ? add a //go:generate comment?
 
 type TestServer struct {
-	version apiversions.Version
+	Version apiversions.Version
 }
 
 func (s *TestServer) ComputeDouble(ctx context.Context, request *ComputeDoubleRequest) (*ComputeDoubleResponse, error) {

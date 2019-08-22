@@ -4,11 +4,14 @@ import (
 	"context"
 
 	pb "github.com/kubernetes-csi/csi-proxy/api"
+	"github.com/kubernetes-csi/csi-proxy/internal/apiversions"
 )
 
 // TODO wkpo see https://blog.golang.org/generate ? add a //go:generate comment?
 
+// TODO wkpo rename to just server?
 type IscsiServer struct {
+	Version apiversions.Version
 }
 
 // TODO wkpo NEXT! lo que pasa quand on renvoie une error?

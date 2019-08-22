@@ -2,9 +2,10 @@ package apiversions
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"regexp"
 	"strconv"
+
+	"github.com/pkg/errors"
 )
 
 // TODO wkpo move to internal?

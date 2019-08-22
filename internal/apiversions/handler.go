@@ -42,6 +42,10 @@ func (h *Handler) Register(definitions ...Definition) error {
 	return nil
 }
 
+func (h *Handler) Definitions() []Definition {
+	return h.definitions
+}
+
 type UnknownVersion struct {
 	version Version
 }
