@@ -57,32 +57,6 @@ func (s *Server) Start(listeningChan chan interface{}) []error {
 	return s.waitForGRPCServersToStop(doneChan)
 }
 
-// TODO wkpo move to EOF
-func (s *Server) waitForGRPCServersToStop(doneChan chan *apiVersionServerDone) (errs []error) {
-	definitions := s.handler.Definitions()
-
-	processServerDoneEvent := func(event *apiVersionServerDone) {
-		if event.err != nil {
-			err := errors.Wrapf(event.err, "GRPC server for API version %v failed", definitions[event.definitionIndex].Version)
-			errs = append(errs, err)
-		}
-	}
-
-	// and now let's wait for at least one server to be done
-	processServerDoneEvent(<-doneChan)
-
-	// let's stop all other servers
-	s.Stop()
-
-	// and wait for them to stop
-	// TODO: do we want a timeout here?
-	for doneCount := 1; doneCount < len(definitions); doneCount++ {
-		processServerDoneEvent(<-doneChan)
-	}
-
-	return
-}
-
 // startListening creates the named pipes, and starts GRPC servers listening on them.
 func (s *Server) startListening() (chan *apiVersionServerDone, []error) {
 	s.mutex.Lock()
@@ -154,6 +128,31 @@ func (s *Server) createAndStartGRPCServers(listeners []net.Listener) chan *apiVe
 	}
 
 	return doneChan
+}
+
+func (s *Server) waitForGRPCServersToStop(doneChan chan *apiVersionServerDone) (errs []error) {
+	definitions := s.handler.Definitions()
+
+	processServerDoneEvent := func(event *apiVersionServerDone) {
+		if event.err != nil {
+			err := errors.Wrapf(event.err, "GRPC server for API version %v failed", definitions[event.definitionIndex].Version)
+			errs = append(errs, err)
+		}
+	}
+
+	// and now let's wait for at least one server to be done
+	processServerDoneEvent(<-doneChan)
+
+	// let's stop all other servers
+	s.Stop()
+
+	// and wait for them to stop
+	// TODO: do we want a timeout here?
+	for doneCount := 1; doneCount < len(definitions); doneCount++ {
+		processServerDoneEvent(<-doneChan)
+	}
+
+	return
 }
 
 // Stop stops all GRPC servers.

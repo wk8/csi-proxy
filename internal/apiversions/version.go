@@ -80,6 +80,12 @@ func NewVersion(name string) Version {
 	}
 }
 
+// IsValidVersionName checks whether a given version name is valid.
+// TODO wkpo need be public?
+func IsValidVersionName(name string) bool {
+	return nameRegex.MatchString(name)
+}
+
 func toInt(s, name string) (uint, error) {
 	i, err := strconv.ParseUint(s, 10, 0)
 	if err != nil {

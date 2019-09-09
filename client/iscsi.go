@@ -1,23 +1,20 @@
-package v0alpha1
+package client
 
+// TODO wkpo imports
 import (
 	"context"
 	"fmt"
 	"github.com/Microsoft/go-winio"
+	"google.golang.org/grpc"
 	"net"
 
-	"google.golang.org/grpc"
+	pb "github.com/kubernetes-csi/csi-proxy/api"
 )
 
-type Client struct {
+type IscsiClient struct {
 }
 
-func (*Client) ComputeDouble(input int32) {
-
-}
-
-// TODO wkpo
-func clientMain() {
+func (*IscsiClient) wkpo() {
 	conn, err := grpc.Dial(`\\.\pipe\csi-proxy-v1alpha1`,
 		grpc.WithContextDialer(func(context context.Context, s string) (net.Conn, error) {
 			return winio.DialPipeContext(context, s)
@@ -29,6 +26,10 @@ func clientMain() {
 
 	// TODO wkpo important ca... pas oublier ca!
 	defer conn.Close()
+
+	client := pb.NewIscsiCSIProxyServiceClient(conn)
+	client.MountISCSILun()
+
 	client := NewTestCSIProxyServiceClient(conn)
 
 	req := &ComputeDoubleRequest{
