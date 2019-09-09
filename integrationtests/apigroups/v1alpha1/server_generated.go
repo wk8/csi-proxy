@@ -16,20 +16,20 @@ type v1alpha1Server struct {
 }
 
 // TODO wkpo next, apres generation
-func (s *v1alpha1Server) ComputeDouble(ctx context.Context, v1Request *ComputeDoubleRequest) (*ComputeDoubleResponse, error) {
+func (s *v1alpha1Server) ComputeDouble(ctx context.Context, v1alpha1Request *ComputeDoubleRequest) (*ComputeDoubleResponse, error) {
 	request := &server.ComputeDoubleRequest{}
-	if err := Convert_v1_ComputeDoubleRequest_To_server_ComputeDoubleRequest(v1Request, request); err != nil {
+	if err := Convert_v1alpha1_ComputeDoubleRequest_To_server_ComputeDoubleRequest(v1alpha1Request, request); err != nil {
 		return nil, err
 	}
 	response, err := s.apiGroupServer.ComputeDouble(ctx, request, s.version)
 	if err != nil {
 		return nil, err
 	}
-	v1Response := &ComputeDoubleResponse{}
-	if err = Convert_server_ComputeDoubleResponse_To_v1_ComputeDoubleResponse(response, v1Response); err != nil {
+	v1alpha1Response := &ComputeDoubleResponse{}
+	if err = Convert_server_ComputeDoubleResponse_To_v1alpha1_ComputeDoubleResponse(response, v1alpha1Response); err != nil {
 		return nil, err
 	}
-	return v1Response, nil
+	return v1alpha1Response, nil
 }
 
 // TODO wkpo move to 1st line
