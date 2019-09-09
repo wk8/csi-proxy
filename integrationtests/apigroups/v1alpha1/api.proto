@@ -2,7 +2,7 @@
 
 syntax = "proto3";
 
-package v0alpha1;
+package v1alpha1;
 
 // TODO wkpo double check comments are in sync with code!
 

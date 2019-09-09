@@ -285,6 +285,8 @@ func (*UnimplementedTestCSIProxyServiceServer) TellMeAPoem(ctx context.Context, 
 	return nil, status.Errorf(codes.Unimplemented, "method TellMeAPoem not implemented")
 }
 
+// TODO wkpo c ca qu'on veut appeler automatiquement!
+// en fait on veut un auto-gen qui construit le server pour chaque version automatiquement, and then registers it...?
 func RegisterTestCSIProxyServiceServer(s *grpc.Server, srv TestCSIProxyServiceServer) {
 	s.RegisterService(&_TestCSIProxyService_serviceDesc, srv)
 }
