@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/Microsoft/go-winio"
 	pb "github.com/kubernetes-csi/csi-proxy/api"
-	"github.com/kubernetes-csi/csi-proxy/internal/apiversions/definitions"
-	"github.com/kubernetes-csi/csi-proxy/server"
-	"github.com/kubernetes-csi/csi-proxy/server/iscsi"
+	"github.com/kubernetes-csi/csi-proxy/internal/apiversion/definitions"
+	"github.com/kubernetes-csi/csi-proxy/internal/server"
+	"github.com/kubernetes-csi/csi-proxy/internal/server/iscsi"
 	"google.golang.org/grpc"
 	"os/exec"
 )

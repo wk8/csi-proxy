@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/kubernetes-csi/csi-proxy/internal"
-	"github.com/kubernetes-csi/csi-proxy/internal/apiversions"
+	"github.com/kubernetes-csi/csi-proxy/internal/apiversion"
 )
 
 // TODO wkpo should be in internal...

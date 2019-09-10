@@ -30,7 +30,7 @@ func (*IscsiClient) wkpo() {
 	client := pb.NewIscsiCSIProxyServiceClient(conn)
 	client.MountISCSILun()
 
-	client := NewTestCSIProxyServiceClient(conn)
+	client := NewDummyClient(conn)
 
 	req := &ComputeDoubleRequest{
 		Input32: 28,

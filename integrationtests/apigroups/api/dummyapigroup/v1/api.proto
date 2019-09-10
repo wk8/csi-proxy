@@ -1,0 +1,34 @@
+// TODO wkpo comment!
+
+syntax = "proto3";
+
+package v1;
+
+service Dummy {
+    // ComputeDouble computes the double of the input. Real smart stuff!
+    rpc ComputeDouble(ComputeDoubleRequest) returns (ComputeDoubleResponse) {}
+
+    // TellMeAPoem returns a very poetic response.
+    rpc TellMeAPoem(TellMeAPoemRequest) returns (TellMeAPoemResponse) {}
+}
+
+message ComputeDoubleRequest{
+    // we changed in favor of an int64 field here
+    // TODO wkpo ca pourrait etre 1 ca?
+    int64 input64 = 2;
+}
+
+message ComputeDoubleResponse{
+    // TODO wkpo ca pourrait etre 1 ca?
+    int64 response = 2;
+}
+
+message TellMeAPoemRequest{
+    bool i_want_a_title = 1;
+}
+
+message TellMeAPoemResponse{
+    string title = 2;
+
+    repeated string lines = 1;
+}
