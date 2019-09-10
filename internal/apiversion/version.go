@@ -8,8 +8,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO wkpo unit tests...
-
 // API version names follow k8s style version names:
 // valid API version names examples: "v1", "v1-alpha2", "v2-beta3", etc...
 var nameRegex = regexp.MustCompile("^v([0-9]*)(?:(alpha|beta)([1-9][0-9]*))?$")

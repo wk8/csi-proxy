@@ -1,1 +1,5 @@
-TODO wkpo explain the general idea, see slack with deep!
+# CSI proxy's API
+
+The CSI proxy's API is a versioned API.
+
+# TODO wkpo

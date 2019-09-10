@@ -5,12 +5,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/api/dummy/v1alpha1"
-	v1alpha1client "github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client/dummy/v1alpha1"
-	"github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server/dummy"
-	"github.com/kubernetes-csi/csi-proxy/internal/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/api/dummy/v1"
+	"github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/api/dummy/v1alpha1"
+	"github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/api/dummy/v1alpha2"
+	v1client "github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client/dummy/v1"
+	v1alpha1client "github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client/dummy/v1alpha1"
+	v1alpha2client "github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client/dummy/v1alpha2"
+	"github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server/dummy"
+	"github.com/kubernetes-csi/csi-proxy/internal/server"
 )
 
 func TestAPIGroups(t *testing.T) {
@@ -21,13 +26,40 @@ func TestAPIGroups(t *testing.T) {
 		require.Nil(t, err)
 		defer client.Close()
 
-		// happy path
 		request := &v1alpha1.ComputeDoubleRequest{
 			Input32: 28,
 		}
 		response, err := client.ComputeDouble(context.Background(), request)
 		if assert.Nil(t, err) {
-			assert.Equal(t, "wkpo", response.Response32)
+			assert.Equal(t, 56, response.Response32)
+		}
+	})
+
+	t.Run("with v1alpha2", func(t *testing.T) {
+		client, err := v1alpha2client.NewClient()
+		require.Nil(t, err)
+		defer client.Close()
+
+		request := &v1alpha2.ComputeDoubleRequest{
+			Input64: 28,
+		}
+		response, err := client.ComputeDouble(context.Background(), request)
+		if assert.Nil(t, err) {
+			assert.Equal(t, int64(56), response.Response)
+		}
+	})
+
+	t.Run("with v1", func(t *testing.T) {
+		client, err := v1client.NewClient()
+		require.Nil(t, err)
+		defer client.Close()
+
+		request := &v1.TellMeAPoemRequest{
+			IWantATitle: true,
+		}
+		response, err := client.TellMeAPoem(context.Background(), request)
+		if assert.Nil(t, err) {
+			assert.Equal(t, "The New Colossus", response.Title)
 		}
 	})
 }

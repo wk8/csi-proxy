@@ -18,7 +18,6 @@ type Server struct {
 	grpcServers   []*grpc.Server
 }
 
-// TODO wkpo comment?
 func NewServer(apiGroups ...APIGroup) *Server {
 	versionedAPIs := make([]*VersionedAPI, 0, len(apiGroups))
 	for _, apiGroup := range apiGroups {
@@ -35,7 +34,6 @@ func NewServer(apiGroups ...APIGroup) *Server {
 // as soon as any of those servers shuts down (at which point it also shuts down all the
 // others).
 // If passed a listeningChan, it will close it when it's started listening.
-// TODO wkpo chan to say when started listening? use for tests!!
 func (s *Server) Start(listeningChan chan interface{}) []error {
 	doneChan, errors := s.startListening()
 	if len(errors) != 0 {

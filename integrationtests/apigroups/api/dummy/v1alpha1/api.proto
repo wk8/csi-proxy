@@ -1,10 +1,6 @@
-// TODO wkpo comment!
-
 syntax = "proto3";
 
 package v1alpha1;
-
-// TODO wkpo double check comments are in sync with code!
 
 service Dummy {
     // ComputeDouble computes the double of the input. Real smart stuff!

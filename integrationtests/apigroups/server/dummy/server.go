@@ -8,16 +8,8 @@ import (
 	"github.com/kubernetes-csi/csi-proxy/internal/apiversion"
 )
 
-// TODO wkpo comment??
+type Server struct{}
 
-// TODO generate une interface avec lequel ce truc la doit matcher!
-
-type Server struct {
-	// TODO wkpo
-}
-
-// TODO wkpo handle le case int32? something like if version < blah cast to int32,
-// OU TODO wkpo est ce que ca devrait plutot aller dans la conversion ca...??
 func (s *Server) ComputeDouble(ctx context.Context, request *internal.ComputeDoubleRequest, version apiversion.Version) (*internal.ComputeDoubleResponse, error) {
 	in := request.Input64
 	out := 2 * in

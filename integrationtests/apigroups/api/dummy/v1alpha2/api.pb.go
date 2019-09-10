@@ -26,7 +26,6 @@ const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type ComputeDoubleRequest struct {
 	// we changed in favor of an int64 field here
-	// TODO wkpo ca pourrait etre 1 ca?
 	Input64              int64    `protobuf:"varint,2,opt,name=input64,proto3" json:"input64,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -66,7 +65,6 @@ func (m *ComputeDoubleRequest) GetInput64() int64 {
 }
 
 type ComputeDoubleResponse struct {
-	// TODO wkpo ca pourrait etre 1 ca?
 	Response             int64    `protobuf:"varint,2,opt,name=response,proto3" json:"response,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
