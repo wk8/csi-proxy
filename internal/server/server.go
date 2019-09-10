@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server/dummy"
+	"github.com/kubernetes-csi/csi-proxy/internal"
 	"net"
 	"sync"
 
@@ -12,10 +13,10 @@ import (
 )
 
 type Server struct {
-	apiGroupServers []ApiGroupServer
-	started         bool
-	mutex           *sync.Mutex
-	grpcServers     []*grpc.Server
+	versionedApis []*VersionedApi
+	started       bool
+	mutex         *sync.Mutex
+	grpcServers   []*grpc.Server
 }
 
 // TODO wkpo comment?
@@ -24,13 +25,19 @@ func NewServer(apiGroups ...ApiGroupServer) *Server {
 		apiGroups = defaultApiGroups()
 	}
 
+	// TODO wkpo next from here!
+	versionedApis := make([]*VersionedApi, 0, len(apiGroups))
+	for _, apiGroup := range apiGroups {
+		versionedApis := append(versionedApis, apiGroup.VersionedApis()...)
+	}
+
 	return &Server{
-		apiGroupServers: apiGroups,
-		mutex:           &sync.Mutex{},
+		versionedApis: versionedApis,
+		mutex:         &sync.Mutex{},
 	}
 }
 
-// TODO wkpo circular import la non?
+// TODO wkpo circular import la non? this should be in a different pkg, prolly
 // TODO wkpo comment
 func defaultApiGroups() []ApiGroupServer {
 	// TODO: add API groups as we add them to the project
@@ -75,13 +82,12 @@ func (s *Server) startListening() (chan *apiVersionServerDone, []error) {
 	return s.createAndStartGRPCServers(listeners), nil
 }
 
-// createListeners creates the named pipes
+// createListeners creates the named pipes.
 func (s *Server) createListeners() (listeners []net.Listener, errors []error) {
-	definitions := s.handler.Definitions()
-	listeners = make([]net.Listener, len(definitions))
+	listeners = make([]net.Listener, len(s.versionedApis))
 
-	for i, definition := range definitions {
-		pipePath := internal.PipePathForApiVersion(definition.Version)
+	for i, versionedApi := range s.versionedApis {
+		pipePath := internal.PipePath(versionedApi.Group, versionedApi.Version)
 
 		listener, err := winio.ListenPipe(pipePath, nil)
 		if err == nil {
@@ -89,7 +95,6 @@ func (s *Server) createListeners() (listeners []net.Listener, errors []error) {
 		} else {
 			errors = append(errors, err)
 		}
-
 	}
 
 	if len(errors) != 0 {
@@ -104,8 +109,25 @@ func (s *Server) createListeners() (listeners []net.Listener, errors []error) {
 	return
 }
 
-// createAndStartGRPCServers creates the GRPC servers, but doesn't start them yet.
+type versionedApiDone struct {
+	definitionIndex int
+	err             error
+}
+
+// createAndStartGRPCServers creates the GRPC servers, but doesn't start them just yet.
 func (s *Server) createAndStartGRPCServers(listeners []net.Listener) chan *apiVersionServerDone {
+	doneChan := make(chan *apiVersionServerDone, len(listeners))
+
+	// TODO wkpo next from here!
+
+	// TODO wkpo oldies
+	// TODO wkpo oldies
+	// TODO wkpo oldies
+	// TODO wkpo oldies
+	// TODO wkpo oldies
+	// TODO wkpo oldies
+	// TODO wkpo oldies
+
 	definitions := s.handler.Definitions()
 	s.grpcServers = make([]*grpc.Server, len(definitions))
 
