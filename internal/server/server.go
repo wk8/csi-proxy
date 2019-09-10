@@ -12,53 +12,30 @@ import (
 )
 
 type Server struct {
-	started     bool
-	mutex       *sync.Mutex
-	grpcServers []*grpc.Server
+	apiGroupServers []ApiGroupServer
+	started         bool
+	mutex           *sync.Mutex
+	grpcServers     []*grpc.Server
 }
 
 // TODO wkpo comment?
-func NewServer(apiGroups ...ApiGroup) *Server {
-	// TODO wkpo
-}
-
-// TODO wkpo
-func wkpo() {
-	NewServer(dummy.ApiGroup{})
-}
-
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-
-type Server struct {
-	handler     *apiversions.Handler
-	started     bool
-	mutex       *sync.Mutex
-	grpcServers []*grpc.Server
-}
-
-// TODO wkpo comment?
-func NewServer(definitions ...apiversions.Definition) (*Server, error) {
-	handler := &apiversions.Handler{}
-	if err := handler.Register(definitions...); err != nil {
-		return nil, err
+func NewServer(apiGroups ...ApiGroupServer) *Server {
+	if len(apiGroups) == 0 {
+		apiGroups = defaultApiGroups()
 	}
 
 	return &Server{
-		handler: handler,
-		mutex:   &sync.Mutex{},
-	}, nil
+		apiGroupServers: apiGroups,
+		mutex:           &sync.Mutex{},
+	}
 }
 
-type apiVersionServerDone struct {
-	definitionIndex int
-	err             error
+// TODO wkpo circular import la non?
+// TODO wkpo comment
+func defaultApiGroups() []ApiGroupServer {
+	// TODO: add API groups as we add them to the project
+	// TODO wkpo
+	return []ApiGroupServer{&dummy.Server{}}
 }
 
 // Starts starts one GRPC server per API version; it is a blocking call, that returns
@@ -151,6 +128,59 @@ func (s *Server) createAndStartGRPCServers(listeners []net.Listener) chan *apiVe
 	}
 
 	return doneChan
+}
+
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+// TODO wkpo oldies
+
+type Server struct {
+	handler     *apiversions.Handler
+	started     bool
+	mutex       *sync.Mutex
+	grpcServers []*grpc.Server
+}
+
+// TODO wkpo comment?
+func NewServer(definitions ...apiversions.Definition) (*Server, error) {
+	handler := &apiversions.Handler{}
+	if err := handler.Register(definitions...); err != nil {
+		return nil, err
+	}
+
+	return &Server{
+		handler: handler,
+		mutex:   &sync.Mutex{},
+	}, nil
+}
+
+type apiVersionServerDone struct {
+	definitionIndex int
+	err             error
 }
 
 func (s *Server) waitForGRPCServersToStop(doneChan chan *apiVersionServerDone) (errs []error) {

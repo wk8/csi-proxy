@@ -12,6 +12,6 @@ type VersionedApi struct {
 	Registrant func(*grpc.Server)
 }
 
-type ApiGroup interface {
+type ApiGroupServer interface {
 	VersionedApis() []*VersionedApi
 }
