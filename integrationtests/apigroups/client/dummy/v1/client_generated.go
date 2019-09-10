@@ -23,7 +23,7 @@ type wrapper struct {
 
 // NewClient returns a client to make calls to the dummy API group version v1.
 // It's the caller's responsibility to Close the client when done.
-func NewClient() (pb.DummyClient, error) {
+func NewClient() (*wrapper, error) {
 	pipePath := internal.PipePath(groupName, version)
 
 	connection, err := grpc.Dial(pipePath,
@@ -41,6 +41,9 @@ func NewClient() (pb.DummyClient, error) {
 		connection: connection,
 	}, nil
 }
+
+// ensures we implement all the required methods
+var _ pb.DummyClient = &wrapper{}
 
 // ComputeDouble computes the double of the input. Real smart stuff!
 func (w *wrapper) ComputeDouble(ctx context.Context, in *pb.ComputeDoubleRequest, opts ...grpc.CallOption) (*pb.ComputeDoubleResponse, error) {

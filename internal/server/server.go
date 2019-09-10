@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server/dummy"
 	"github.com/kubernetes-csi/csi-proxy/internal"
 	"net"
 	"sync"
@@ -21,10 +20,6 @@ type Server struct {
 
 // TODO wkpo comment?
 func NewServer(apiGroups ...APIGroup) *Server {
-	if len(apiGroups) == 0 {
-		apiGroups = defaultAPIGroups()
-	}
-
 	versionedAPIs := make([]*VersionedAPI, 0, len(apiGroups))
 	for _, apiGroup := range apiGroups {
 		versionedAPIs = append(versionedAPIs, apiGroup.VersionedAPIs()...)
@@ -34,14 +29,6 @@ func NewServer(apiGroups ...APIGroup) *Server {
 		versionedAPIs: versionedAPIs,
 		mutex:         &sync.Mutex{},
 	}
-}
-
-// TODO wkpo circular import la non? this should be in a different pkg, prolly - maybe a config pkg? together with the named pipes' prefix?
-// TODO wkpo comment
-func defaultAPIGroups() []APIGroup {
-	// TODO: add API groups as we add them to the project
-	// TODO wkpo
-	return []APIGroup{&dummy.Server{}}
 }
 
 // Starts starts one GRPC server per API version; it is a blocking call, that returns
