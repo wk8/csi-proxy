@@ -6,12 +6,12 @@ import (
 	"github.com/kubernetes-csi/csi-proxy/internal/apiversion"
 )
 
-type VersionedApi struct {
+type VersionedAPI struct {
 	Group      string
 	Version    apiversion.Version
 	Registrant func(*grpc.Server)
 }
 
-type ApiGroupServer interface {
-	VersionedApis() []*VersionedApi
+type APIGroup interface {
+	VersionedAPIs() []*VersionedAPI
 }
