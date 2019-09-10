@@ -25,10 +25,9 @@ func NewServer(apiGroups ...ApiGroupServer) *Server {
 		apiGroups = defaultApiGroups()
 	}
 
-	// TODO wkpo next from here!
 	versionedApis := make([]*VersionedApi, 0, len(apiGroups))
 	for _, apiGroup := range apiGroups {
-		versionedApis := append(versionedApis, apiGroup.VersionedApis()...)
+		versionedApis = append(versionedApis, apiGroup.VersionedApis()...)
 	}
 
 	return &Server{
@@ -37,7 +36,7 @@ func NewServer(apiGroups ...ApiGroupServer) *Server {
 	}
 }
 
-// TODO wkpo circular import la non? this should be in a different pkg, prolly
+// TODO wkpo circular import la non? this should be in a different pkg, prolly - maybe a config pkg? together with the named pipes' prefix?
 // TODO wkpo comment
 func defaultApiGroups() []ApiGroupServer {
 	// TODO: add API groups as we add them to the project
@@ -65,7 +64,7 @@ func (s *Server) Start(listeningChan chan interface{}) []error {
 }
 
 // startListening creates the named pipes, and starts GRPC servers listening on them.
-func (s *Server) startListening() (chan *apiVersionServerDone, []error) {
+func (s *Server) startListening() (chan *versionedApiDone, []error) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -110,41 +109,26 @@ func (s *Server) createListeners() (listeners []net.Listener, errors []error) {
 }
 
 type versionedApiDone struct {
-	definitionIndex int
-	err             error
+	i   int
+	err error
 }
 
 // createAndStartGRPCServers creates the GRPC servers, but doesn't start them just yet.
-func (s *Server) createAndStartGRPCServers(listeners []net.Listener) chan *apiVersionServerDone {
-	doneChan := make(chan *apiVersionServerDone, len(listeners))
+func (s *Server) createAndStartGRPCServers(listeners []net.Listener) chan *versionedApiDone {
+	doneChan := make(chan *versionedApiDone, len(listeners))
 
-	// TODO wkpo next from here!
-
-	// TODO wkpo oldies
-	// TODO wkpo oldies
-	// TODO wkpo oldies
-	// TODO wkpo oldies
-	// TODO wkpo oldies
-	// TODO wkpo oldies
-	// TODO wkpo oldies
-
-	definitions := s.handler.Definitions()
-	s.grpcServers = make([]*grpc.Server, len(definitions))
-
-	doneChan := make(chan *apiVersionServerDone, len(s.handler.Definitions()))
-
-	for i, definition := range definitions {
+	for i, versionedApi := range s.versionedApis {
 		grpcServer := grpc.NewServer()
 		s.grpcServers[i] = grpcServer
 
-		definition.BuildAndRegisterServers(grpcServer, definition.Version, s.handler)
+		versionedApi.Registrant(grpcServer)
 
 		go func() {
 			err := grpcServer.Serve(listeners[i])
 
-			doneChan <- &apiVersionServerDone{
-				definitionIndex: i,
-				err:             err,
+			doneChan <- &versionedApiDone{
+				i:   i,
+				err: err,
 			}
 		}()
 	}
@@ -152,65 +136,11 @@ func (s *Server) createAndStartGRPCServers(listeners []net.Listener) chan *apiVe
 	return doneChan
 }
 
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-// TODO wkpo oldies
-
-type Server struct {
-	handler     *apiversions.Handler
-	started     bool
-	mutex       *sync.Mutex
-	grpcServers []*grpc.Server
-}
-
-// TODO wkpo comment?
-func NewServer(definitions ...apiversions.Definition) (*Server, error) {
-	handler := &apiversions.Handler{}
-	if err := handler.Register(definitions...); err != nil {
-		return nil, err
-	}
-
-	return &Server{
-		handler: handler,
-		mutex:   &sync.Mutex{},
-	}, nil
-}
-
-type apiVersionServerDone struct {
-	definitionIndex int
-	err             error
-}
-
-func (s *Server) waitForGRPCServersToStop(doneChan chan *apiVersionServerDone) (errs []error) {
-	definitions := s.handler.Definitions()
-
-	processServerDoneEvent := func(event *apiVersionServerDone) {
+func (s *Server) waitForGRPCServersToStop(doneChan chan *versionedApiDone) (errs []error) {
+	processServerDoneEvent := func(event *versionedApiDone) {
 		if event.err != nil {
-			err := errors.Wrapf(event.err, "GRPC server for API version %v failed", definitions[event.definitionIndex].Version)
+			versionedApi := s.versionedApis[event.i]
+			err := errors.Wrapf(event.err, "GRPC server for API group %s version %s failed", versionedApi.Group, versionedApi.Version)
 			errs = append(errs, err)
 		}
 	}
@@ -223,7 +153,7 @@ func (s *Server) waitForGRPCServersToStop(doneChan chan *apiVersionServerDone) (
 
 	// and wait for them to stop
 	// TODO: do we want a timeout here?
-	for doneCount := 1; doneCount < len(definitions); doneCount++ {
+	for doneCount := 1; doneCount < len(s.versionedApis); doneCount++ {
 		processServerDoneEvent(<-doneChan)
 	}
 
@@ -246,8 +176,4 @@ func (s *Server) Stop() error {
 	}
 
 	return nil
-}
-
-func (s *Server) WrapHandler() {
-	// TODO wkpo next ?
 }
