@@ -3,7 +3,7 @@ package server
 import (
 	"google.golang.org/grpc"
 
-	"github.com/kubernetes-csi/csi-proxy/internal/apiversion"
+	"github.com/wk8/csi-proxy/internal/apiversion"
 )
 
 type VersionedAPI struct {

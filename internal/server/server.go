@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 
-	"github.com/kubernetes-csi/csi-proxy/internal"
+	"github.com/wk8/csi-proxy/internal"
 )
 
 type Server struct {

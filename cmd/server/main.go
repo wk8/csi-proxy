@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/kubernetes-csi/csi-proxy/internal/server"
-	filesystem "github.com/kubernetes-csi/csi-proxy/internal/server/filesystem"
+	"github.com/wk8/csi-proxy/internal/server"
+	filesystem "github.com/wk8/csi-proxy/internal/server/filesystem"
 )
 
 func main() {

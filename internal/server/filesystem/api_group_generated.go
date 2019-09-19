@@ -3,10 +3,10 @@
 package dummy
 
 import (
-	"github.com/kubernetes-csi/csi-proxy/internal/apiversion"
-	"github.com/kubernetes-csi/csi-proxy/internal/server"
-	"github.com/kubernetes-csi/csi-proxy/internal/server/filesystem/internal"
-	"github.com/kubernetes-csi/csi-proxy/internal/server/filesystem/internal/v1alpha1"
+	"github.com/wk8/csi-proxy/internal/apiversion"
+	"github.com/wk8/csi-proxy/internal/server"
+	"github.com/wk8/csi-proxy/internal/server/filesystem/internal"
+	"github.com/wk8/csi-proxy/internal/server/filesystem/internal/v1alpha1"
 )
 
 const name = "filesystem"

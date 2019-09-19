@@ -3,9 +3,9 @@ package dummy
 import (
 	"context"
 
-	"github.com/kubernetes-csi/csi-proxy/api"
-	"github.com/kubernetes-csi/csi-proxy/internal/apiversion"
-	"github.com/kubernetes-csi/csi-proxy/internal/server/filesystem/internal"
+	"github.com/wk8/csi-proxy/api"
+	"github.com/wk8/csi-proxy/internal/apiversion"
+	"github.com/wk8/csi-proxy/internal/server/filesystem/internal"
 )
 
 type Server struct{}

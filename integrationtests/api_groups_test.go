@@ -8,13 +8,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/api/dummy/v1"
-	"github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/api/dummy/v1alpha1"
-	"github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/api/dummy/v1alpha2"
-	v1client "github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client/dummy/v1"
-	v1alpha1client "github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client/dummy/v1alpha1"
-	v1alpha2client "github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client/dummy/v1alpha2"
-	"github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server/dummy"
+	"github.com/wk8/csi-proxy/integrationtests/apigroups/api/dummy/v1"
+	"github.com/wk8/csi-proxy/integrationtests/apigroups/api/dummy/v1alpha1"
+	"github.com/wk8/csi-proxy/integrationtests/apigroups/api/dummy/v1alpha2"
+	v1client "github.com/wk8/csi-proxy/integrationtests/apigroups/client/dummy/v1"
+	v1alpha1client "github.com/wk8/csi-proxy/integrationtests/apigroups/client/dummy/v1alpha1"
+	v1alpha2client "github.com/wk8/csi-proxy/integrationtests/apigroups/client/dummy/v1alpha2"
+	"github.com/wk8/csi-proxy/integrationtests/apigroups/server/dummy"
 )
 
 // This tests the general API structure; it uses a test dummy API group.

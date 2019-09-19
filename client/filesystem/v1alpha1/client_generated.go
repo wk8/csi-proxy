@@ -9,9 +9,9 @@ import (
 	"github.com/Microsoft/go-winio"
 	"google.golang.org/grpc"
 
-	pb "github.com/kubernetes-csi/csi-proxy/api/filesystem/v1alpha1"
-	"github.com/kubernetes-csi/csi-proxy/internal"
-	"github.com/kubernetes-csi/csi-proxy/internal/apiversion"
+	pb "github.com/wk8/csi-proxy/api/filesystem/v1alpha1"
+	"github.com/wk8/csi-proxy/internal"
+	"github.com/wk8/csi-proxy/internal/apiversion"
 )
 
 const groupName = "filesystem"

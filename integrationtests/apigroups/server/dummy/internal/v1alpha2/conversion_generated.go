@@ -3,8 +3,8 @@
 package v1alpha2
 
 import (
-	pb "github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/api/dummy/v1alpha2"
-	internal "github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server/dummy/internal"
+	pb "github.com/wk8/csi-proxy/integrationtests/apigroups/api/dummy/v1alpha2"
+	internal "github.com/wk8/csi-proxy/integrationtests/apigroups/server/dummy/internal"
 )
 
 func autoconvert_pb_ComputeDoubleRequest_To_internal_ComputeDoubleRequest(in *pb.ComputeDoubleRequest, out *internal.ComputeDoubleRequest) error {

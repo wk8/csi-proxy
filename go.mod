@@ -1,4 +1,4 @@
-module github.com/kubernetes-csi/csi-proxy
+module github.com/wk8/csi-proxy
 
 go 1.12
 

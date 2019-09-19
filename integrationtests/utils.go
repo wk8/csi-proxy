@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kubernetes-csi/csi-proxy/internal/server"
 	"github.com/stretchr/testify/assert"
+	"github.com/wk8/csi-proxy/internal/server"
 )
 
 // startServer starts the proxy's GRPC servers, and returns a function to shut them down when done with testing
