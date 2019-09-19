@@ -9,4 +9,5 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/stretchr/testify v1.4.0
 	google.golang.org/grpc v1.23.0
+	k8s.io/api v0.0.0-20190919035539-41700d9d0c5b
 )
