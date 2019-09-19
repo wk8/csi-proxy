@@ -3,7 +3,7 @@
 package dummy
 
 import (
-	"github.com/wk8/csi-proxy/internal/apiversion"
+	"github.com/wk8/csi-proxy/client/apiversion"
 	"github.com/wk8/csi-proxy/internal/server"
 	"github.com/wk8/csi-proxy/internal/server/filesystem/internal"
 	"github.com/wk8/csi-proxy/internal/server/filesystem/internal/v1alpha1"

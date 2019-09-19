@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 
 	pb "github.com/wk8/csi-proxy/api/filesystem/v1alpha1"
-	"github.com/wk8/csi-proxy/internal/apiversion"
+	"github.com/wk8/csi-proxy/client/apiversion"
 	"github.com/wk8/csi-proxy/internal/server/filesystem/internal"
 )
 

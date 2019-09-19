@@ -10,9 +10,9 @@ import (
 
 	"google.golang.org/grpc"
 
+	"github.com/wk8/csi-proxy/client/apiversion"
 	pb "github.com/wk8/csi-proxy/integrationtests/apigroups/api/dummy/v1alpha1"
 	"github.com/wk8/csi-proxy/integrationtests/apigroups/server/dummy/internal"
-	"github.com/wk8/csi-proxy/internal/apiversion"
 )
 
 var version = apiversion.NewVersionOrPanic("v1alpha1")

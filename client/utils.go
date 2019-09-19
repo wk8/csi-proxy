@@ -1,7 +1,7 @@
-package internal
+package client
 
 import (
-	"github.com/wk8/csi-proxy/internal/apiversion"
+	"github.com/wk8/csi-proxy/client/apiversion"
 )
 
 const (
