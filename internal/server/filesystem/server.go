@@ -5,7 +5,7 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/wk8/csi-proxy/api"
+	"github.com/wk8/csi-proxy/client/api"
 	"github.com/wk8/csi-proxy/client/apiversion"
 	"github.com/wk8/csi-proxy/internal/server/filesystem/internal"
 )

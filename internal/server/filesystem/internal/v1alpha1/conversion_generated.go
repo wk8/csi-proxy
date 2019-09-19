@@ -3,8 +3,8 @@
 package v1alpha1
 
 import (
-	"github.com/wk8/csi-proxy/api"
-	pb "github.com/wk8/csi-proxy/api/filesystem/v1alpha1"
+	"github.com/wk8/csi-proxy/client/api"
+	pb "github.com/wk8/csi-proxy/client/api/filesystem/v1alpha1"
 	"github.com/wk8/csi-proxy/internal/server/filesystem/internal"
 )
 

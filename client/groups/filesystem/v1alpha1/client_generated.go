@@ -9,8 +9,8 @@ import (
 	"github.com/Microsoft/go-winio"
 	"google.golang.org/grpc"
 
-	pb "github.com/wk8/csi-proxy/api/filesystem/v1alpha1"
 	"github.com/wk8/csi-proxy/client"
+	pb "github.com/wk8/csi-proxy/client/api/filesystem/v1alpha1"
 	"github.com/wk8/csi-proxy/client/apiversion"
 )
 

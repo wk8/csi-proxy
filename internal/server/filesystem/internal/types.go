@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"github.com/wk8/csi-proxy/api"
+	"github.com/wk8/csi-proxy/client/api"
 )
 
 type PathExistsRequest struct {
