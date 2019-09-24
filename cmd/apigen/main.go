@@ -7,10 +7,8 @@ import (
 	"k8s.io/gengo/args"
 
 	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/generators"
+	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
 )
-
-// TODO wkpo comment?
-const csiProxyAPIPackage = "github.com/kubernetes-csi/csi-proxy/client/api/..."
 
 func main() {
 	// TODO wkpo mouaif
@@ -23,7 +21,7 @@ func main() {
 	pflag.Parse()
 
 	if len(genericArgs.InputDirs) == 0 {
-		genericArgs.InputDirs = append(genericArgs.InputDirs, csiProxyAPIPackage)
+		genericArgs.InputDirs = append(genericArgs.InputDirs, internal.CSIProxyAPIPath+"...")
 	}
 
 	if err := genericArgs.Execute(

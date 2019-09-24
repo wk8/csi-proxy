@@ -216,7 +216,7 @@ Deprecate and remove all its versions as explained in the previous version; then
 
 This section details how `csi-proxy-gen` works, and what files it generates; `csi-proxy-gen` is built on top of [gengo](https://github.com/kubernetes/gengo), and re-uses part of [k8s' code-generator](https://github.com/kubernetes/code-generator), notably to generate conversion functions.
 
-First, it looks for all API group definitions, which are either subdirectories of `client/api/`, or any go package that contains a `doc.go` file containing a `// +csi-proxy-gen` comment.
+First, it looks for all API group definitions, which are either subdirectories of `client/api/`, or any go package whose `doc.go` file contains a `// +csi-proxy-gen` comment.
 
 Then for each API group it finds:
 1. it iterates through each version subpackage, and in each looks for the `<ApiGroupName>Server` interface, and compiles the list of callbacks that the group's `Server` needs to implement as well as the list of top-level `struct`s (`*Request`s and `*Response`s)
