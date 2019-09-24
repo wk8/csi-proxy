@@ -16,29 +16,7 @@ func main() {
 	// TODO wkpo mouaif
 	logrus.SetLevel(logrus.DebugLevel)
 
-	// TODO wkpo separate function!
-	genericArgs := args.Default().WithoutDefaultFlagParsing()
-	genericArgs.AddFlags(pflag.CommandLine)
-	pflag.CommandLine.AddGoFlagSet(goflag.CommandLine)
-	pflag.Parse()
-
-	if len(genericArgs.InputDirs) == 0 {
-		genericArgs.InputDirs = append(genericArgs.InputDirs, internal.CSIProxyAPIPath)
-	}
-	// it doesn't really make sense to consider a package in isolation, since an API group is
-	// always a collection of subpackages (its versions)
-	// so we consider all inputs recursively
-	for i, inputDir := range genericArgs.InputDirs {
-		suffix := "..."
-		if !strings.HasSuffix(inputDir, suffix) {
-			if !strings.HasSuffix(inputDir, "/") {
-				suffix = "/" + suffix
-			}
-			genericArgs.InputDirs[i] = inputDir + suffix
-		}
-	}
-
-	if err := genericArgs.Execute(
+	if err := buildArgs().Execute(
 		generators.NameSystems(),
 		generators.DefaultNameSystem(),
 		generators.Packages,
@@ -47,4 +25,28 @@ func main() {
 	}
 
 	logrus.Infof("wkpo bordel")
+}
+
+func buildArgs() *args.GeneratorArgs {
+	genericArgs := args.Default().WithoutDefaultFlagParsing()
+
+	genericArgs.AddFlags(pflag.CommandLine)
+	pflag.CommandLine.AddGoFlagSet(goflag.CommandLine)
+	pflag.Parse()
+
+	// if no package argument, default to processing canonical API groups, under CSIProxyAPIPath
+	if len(genericArgs.InputDirs) == 0 {
+		genericArgs.InputDirs = append(genericArgs.InputDirs, internal.CSIProxyAPIPath)
+	}
+
+	// it doesn't really make sense to consider a package in isolation, since an API group is
+	// always a collection of subpackages (its versions)
+	// so we consider all inputs recursively
+	for i, inputDir := range genericArgs.InputDirs {
+		if !strings.HasSuffix(inputDir, "...") {
+			genericArgs.InputDirs[i] = internal.CanonicalizePkgPath(inputDir) + "/..."
+		}
+	}
+
+	return genericArgs
 }

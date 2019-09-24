@@ -55,6 +55,7 @@ func (d *groupDefinition) String() string {
 	if d == nil {
 		return "<nil>"
 	}
+
 	result := fmt.Sprintf("{name: %q", d.name)
 	if d.serverBasePkg != "" && d.serverBasePkg != defaultServerBasePkg {
 		result += fmt.Sprintf(", serverBasePkg: %q", d.serverBasePkg)
@@ -177,9 +178,9 @@ func buildAPIGroupDefinitionFromDocComment(pkgPath string, pkg *gengotypes.Packa
 					case "groupName":
 						definition.name = value
 					case "serverBasePkg":
-						definition.serverBasePkg = value
+						definition.serverBasePkg = internal.CanonicalizePkgPath(value)
 					case "clientBasePkg":
-						definition.clientBasePkg = value
+						definition.clientBasePkg = internal.CanonicalizePkgPath(value)
 					default:
 						logrus.Fatalf("Unknown option %q for package %q", name, pkgPath)
 					}
