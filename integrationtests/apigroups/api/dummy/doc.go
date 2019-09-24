@@ -5,4 +5,4 @@ package dummy
 //  * groupName: current package name
 //  * serverBasePkg: github.com/kubernetes-csi/csi-proxy/internal/server
 //  * clientBasePkg: github.com/kubernetes-csi/csi-proxy/client/groups
-// +csi-proxy-gen=groupName:dummy,serverBasePkg=github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server,clientBasePkg=github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client
+// +csi-proxy-gen=groupName:dummy,serverBasePkg:github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server,clientBasePkg:github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client

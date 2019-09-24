@@ -16,6 +16,8 @@ import (
 	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
 )
 
+// TODO wkpo save a SHA of source files, and don't regenerate if not needed? possible?
+
 // TODO wkpo pkg comment?
 
 // TODO wkpo comments?
@@ -26,7 +28,7 @@ const (
 )
 
 // TODO wkpo comment?
-var markerCommentRegex = regexp.MustCompile(`^\s*(?://)\s*` + regexp.QuoteMeta(markerComment) + `\s*(=[.]*)?$`)
+var markerCommentRegex = regexp.MustCompile(`^\s*(?://)?\s*` + regexp.QuoteMeta(markerComment) + `\s*=?([^\n]*)?$`)
 
 // TODO wkpo comment?
 type genAPI struct {
@@ -63,7 +65,11 @@ func (d *groupDefinition) String() string {
 	if len(d.versions) != 0 {
 		result += ", versions: ["
 		for _, version := range d.versions {
-			result += version.Name + " "
+			if version == nil {
+				result += "<nil> "
+			} else {
+				result += version.Name + " "
+			}
 		}
 		result = result[:len(result)-1] + "]"
 	}
@@ -72,6 +78,7 @@ func (d *groupDefinition) String() string {
 
 // NameSystems returns the name system used by the generators in this package.
 func NameSystems() namer.NameSystems {
+	// TODO wkpo?
 	return namer.NameSystems{
 		"public": namer.NewPublicNamer(0),
 	}
@@ -84,11 +91,9 @@ func DefaultNameSystem() string {
 }
 
 func Packages(context *generator.Context, arguments *args.GeneratorArgs) generator.Packages {
-	// TODO wkpo break up in smaller functions?
-
 	// find API group definitions
 	groups := lookForAPIGroupDefinitions(context)
-	logrus.Debugf("wkpo found groups: %v", groups)
+	logrus.Debugf("Found API groups: %v", groups)
 
 	// TODO wkpo
 	return nil
@@ -104,8 +109,7 @@ func Packages(context *generator.Context, arguments *args.GeneratorArgs) generat
 //  * serverBasePkg: defaults to defaultServerBasePkg
 //  * clientBasePkg: defaults to defaultClientBasePkg
 // for example,
-// +csi-proxy-gen=groupName:dummy,serverBasePkg=github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server,clientBasePkg=github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client
-// TODO wkpo check que le comment marche aussi pour les canoniques!
+// +csi-proxy-gen=groupName:dummy,serverBasePkg:github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server,clientBasePkg:github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client
 func lookForAPIGroupDefinitions(context *generator.Context) map[string]*groupDefinition {
 	pkgPaths := context.Inputs
 
@@ -130,7 +134,6 @@ func lookForAPIGroupDefinitions(context *generator.Context) map[string]*groupDef
 			continue
 		}
 
-		// TODO wkpo break that up more?
 		if strings.HasPrefix(pkgPath, internal.CSIProxyAPIPath) {
 			// part of the canonical API definitions, under client/api
 			buildCanonicalAPIGroupDefinition(pkgPath, pkg, groups)
@@ -162,27 +165,30 @@ func buildAPIGroupDefinitionFromDocComment(pkgPath string, pkg *gengotypes.Packa
 
 			if len(matches) >= 2 {
 				for _, option := range strings.Split(matches[1], ",") {
-					parts := strings.Split(option, "=")
+					parts := strings.Split(option, ":")
 					if len(parts) != 2 {
-						logrus.Fatalf("Malformed option for package %q, options should be of the form \"<name>=<value>\", found %q",
+						logrus.Fatalf("Malformed option for package %q, options should be of the form \"<name>:<value>\", found %q",
 							pkgPath, option)
 					}
 
-					switch parts[0] {
+					name := strings.TrimSpace(parts[0])
+					value := strings.TrimSpace(parts[1])
+					switch name {
 					case "groupName":
-						definition.name = parts[1]
+						definition.name = value
 					case "serverBasePkg":
-						definition.serverBasePkg = parts[1]
+						definition.serverBasePkg = value
 					case "clientBasePkg":
-						definition.clientBasePkg = parts[1]
+						definition.clientBasePkg = value
 					default:
-						logrus.Fatalf("Unknown option %q for package %q", parts[0], pkgPath)
+						logrus.Fatalf("Unknown option %q for package %q", name, pkgPath)
 					}
 				}
 
 			}
 
 			logrus.Debugf("Found API group %q", definition.name)
+			groups[pkg.Path] = definition
 			return true
 		}
 	}
