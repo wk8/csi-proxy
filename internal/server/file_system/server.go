@@ -5,7 +5,7 @@ import (
 
 	"github.com/kubernetes-csi/csi-proxy/client/api"
 	"github.com/kubernetes-csi/csi-proxy/client/apiversion"
-	"github.com/kubernetes-csi/csi-proxy/internal/server/filesystem/internal"
+	"github.com/kubernetes-csi/csi-proxy/internal/server/file_system/internal"
 )
 
 type Server struct{}

@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/kubernetes-csi/csi-proxy/client/api/file_system/v1alpha1"
-	v1alpha1client "github.com/kubernetes-csi/csi-proxy/client/groups/filesystem/v1alpha1"
-	filesystem "github.com/kubernetes-csi/csi-proxy/internal/server/filesystem"
+	v1alpha1client "github.com/kubernetes-csi/csi-proxy/client/groups/file_system/v1alpha1"
+	filesystem "github.com/kubernetes-csi/csi-proxy/internal/server/file_system"
 )
 
 func TestFilesystemAPIGroup(t *testing.T) {

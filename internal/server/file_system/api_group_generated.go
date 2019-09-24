@@ -5,11 +5,11 @@ package dummy
 import (
 	"github.com/kubernetes-csi/csi-proxy/client/apiversion"
 	"github.com/kubernetes-csi/csi-proxy/internal/server"
-	"github.com/kubernetes-csi/csi-proxy/internal/server/filesystem/internal"
-	"github.com/kubernetes-csi/csi-proxy/internal/server/filesystem/internal/v1alpha1"
+	"github.com/kubernetes-csi/csi-proxy/internal/server/file_system/internal"
+	"github.com/kubernetes-csi/csi-proxy/internal/server/file_system/internal/v1alpha1"
 )
 
-const name = "filesystem"
+const name = "file_system"
 
 // ensure the server defines all the required methods
 var _ internal.ServerInterface = &Server{}

@@ -4,7 +4,7 @@
 
 CSI-proxy's API is a GRPC, versioned API.
 
-The server exposes a number of API groups, all independent of each other. Additionally, each API group has one or more versions. Each version in each group listens for GRPC messages on a Windows named pipe of the form `\\.\\pipe\\csi-proxy-<api_group_name>-<version>` (e.g. `\\.\\pipe\\csi-proxy-filesystem-v2alpha1` or `\\.\\pipe\\csi-proxy-iscsi-v1`).
+The server exposes a number of API groups, all independent of each other. Additionally, each API group has one or more versions. Each version in each group listens for GRPC messages on a Windows named pipe of the form `\\.\\pipe\\csi-proxy-<api_group_name>-<version>` (e.g. `\\.\\pipe\\csi-proxy-file_system-v2alpha1` or `\\.\\pipe\\csi-proxy-iscsi-v1`).
 
 APIs are defined by protobuf files; each API group should live in its own directory under `client/api/<api_group_name>` in this repo's root (e.g. `client/api/iscsi`), and then define each of its version in `client/api/<api_group_name>/<version>/api.proto` files (e.g. `client/api/iscsi/v1/api.proto`). Each `proto` file should define exactly one RPC service.
 

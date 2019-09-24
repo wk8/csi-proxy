@@ -9,7 +9,7 @@ import (
 
 	pb "github.com/kubernetes-csi/csi-proxy/client/api/file_system/v1alpha1"
 	"github.com/kubernetes-csi/csi-proxy/client/apiversion"
-	"github.com/kubernetes-csi/csi-proxy/internal/server/filesystem/internal"
+	"github.com/kubernetes-csi/csi-proxy/internal/server/file_system/internal"
 )
 
 var version = apiversion.NewVersionOrPanic("v1alpha1")

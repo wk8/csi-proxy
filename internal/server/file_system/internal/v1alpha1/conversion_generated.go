@@ -5,7 +5,7 @@ package v1alpha1
 import (
 	"github.com/kubernetes-csi/csi-proxy/client/api"
 	pb "github.com/kubernetes-csi/csi-proxy/client/api/file_system/v1alpha1"
-	"github.com/kubernetes-csi/csi-proxy/internal/server/filesystem/internal"
+	"github.com/kubernetes-csi/csi-proxy/internal/server/file_system/internal"
 )
 
 func autoconvert_pb_PathExistsRequest_To_internal_PathExistsRequest(in *pb.PathExistsRequest, out *internal.PathExistsRequest) error {

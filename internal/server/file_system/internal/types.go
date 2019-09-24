@@ -5,7 +5,7 @@ import (
 )
 
 type PathExistsRequest struct {
-	// The path to check in the host filesystem.
+	// The path to check in the host file_system.
 	Path string
 }
 

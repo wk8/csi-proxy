@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/kubernetes-csi/csi-proxy/internal/server"
-	filesystem "github.com/kubernetes-csi/csi-proxy/internal/server/filesystem"
+	file_system "github.com/kubernetes-csi/csi-proxy/internal/server/file_system"
 )
 
 func main() {
@@ -15,6 +15,6 @@ func main() {
 // apiGroups returns the list of enabled API groups.
 func apiGroups() []server.APIGroup {
 	return []server.APIGroup{
-		&filesystem.Server{},
+		&file_system.Server{},
 	}
 }

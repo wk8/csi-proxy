@@ -14,7 +14,7 @@ import (
 	"github.com/kubernetes-csi/csi-proxy/client/apiversion"
 )
 
-const groupName = "filesystem"
+const groupName = "file_system"
 
 var version = apiversion.NewVersionOrPanic("v1alpha1")
 
@@ -23,7 +23,7 @@ type wrapper struct {
 	connection *grpc.ClientConn
 }
 
-// NewClient returns a client to make calls to the filesystem API group version v1alpha1.
+// NewClient returns a client to make calls to the file_system API group version v1alpha1.
 // It's the caller's responsibility to Close the client when done.
 func NewClient() (*wrapper, error) {
 	pipePath := client.PipePath(groupName, version)

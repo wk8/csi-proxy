@@ -10,7 +10,7 @@ const (
 
 	// CsiProxyNamedPipePrefix is the prefix for the named pipes the proxy creates.
 	// The suffix will be the API group and version,
-	// e.g. "\\.\\pipe\\csi-proxy-iscsi-v1", "\\.\\pipe\\csi-proxy-filesystem-v2alpha1", etc.
+	// e.g. "\\.\\pipe\\csi-proxy-iscsi-v1", "\\.\\pipe\\csi-proxy-file_system-v2alpha1", etc.
 	csiProxyNamedPipePrefix = "csi-proxy-"
 )
 
