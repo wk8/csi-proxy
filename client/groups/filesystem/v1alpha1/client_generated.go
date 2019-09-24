@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/kubernetes-csi/csi-proxy/client"
-	pb "github.com/kubernetes-csi/csi-proxy/client/api/filesystem/v1alpha1"
+	pb "github.com/kubernetes-csi/csi-proxy/client/api/file_system/v1alpha1"
 	"github.com/kubernetes-csi/csi-proxy/client/apiversion"
 )
 
