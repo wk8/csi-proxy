@@ -230,7 +230,7 @@ Then for each API group it finds:
     2. it generates missing conversion functions to `internal/server/<api_group_name>/internal/<version>/conversion_generated.go`
     3. it generates `internal/server/<api_group_name>/internal/<version>/server_generated.go`
 6. it generates `internal/server/<api_group_name>/internal/api_group_generated.go` to list all the versioned servers it's just created
-7. and finally, it generates `client/groups/<api_group_name>/<version>/client_generated.go`
+7. and finally, it generates `client/groups/<api_group_name>/<version>/client_generated.go` for each version
 
 When `csi-proxy-gen` has successfully run to completion, [our example API group's go package from earlier](#serverPkgTree) will look something like:
 ```

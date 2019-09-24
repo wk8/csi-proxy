@@ -14,3 +14,8 @@ const (
 func CanonicalizePkgPath(pkgPath string) string {
 	return strings.TrimSuffix(pkgPath, "/")
 }
+
+// ToPackageName turns a snake case string into a go package name.
+func SnakeCaseToPackageName(name string) string {
+	return strings.ReplaceAll(name, "_", "")
+}

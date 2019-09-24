@@ -8,7 +8,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"k8s.io/gengo/args"
-	"k8s.io/gengo/generator"
+	gengogenerator "k8s.io/gengo/generator"
 	"k8s.io/gengo/namer"
 	gengotypes "k8s.io/gengo/types"
 
@@ -29,10 +29,6 @@ const (
 
 // TODO wkpo comment?
 var markerCommentRegex = regexp.MustCompile(`^\s*(?://)?\s*` + regexp.QuoteMeta(markerComment) + `\s*=?([^\n]*)?$`)
-
-// TODO wkpo comment?
-type genAPI struct {
-}
 
 // TODO wkpo comment?
 type groupDefinition struct {
@@ -91,13 +87,88 @@ func DefaultNameSystem() string {
 	return "public"
 }
 
-func Packages(context *generator.Context, arguments *args.GeneratorArgs) generator.Packages {
+func Packages(context *gengogenerator.Context, arguments *args.GeneratorArgs) (packages gengogenerator.Packages) {
 	// find API group definitions
 	groups := lookForAPIGroupDefinitions(context)
 	logrus.Debugf("Found API groups: %v", groups)
 
-	// TODO wkpo
-	return nil
+	for _, group := range groups {
+		packages = append(packages, generatorPackagesForGroup(group)...)
+	}
+	return
+}
+
+// TODO wkpo move to EOF
+func generatorPackagesForGroup(group *groupDefinition) gengogenerator.Packages {
+	packages := gengogenerator.Packages{
+		&gengogenerator.DefaultPackage{
+			PackageName: internal.SnakeCaseToPackageName(group.name),
+			PackagePath: fmt.Sprintf("%s/%s", group.serverBasePkg, group.name),
+
+			// TODO wkpo generators?
+			// api_group_generated.go
+			// server.go (if doesn't exist)
+			GeneratorList: []gengogenerator.Generator{
+				gengogenerator.DefaultGen{
+					OptionalName: "wkpo.go",
+					OptionalBody: []byte("coucou"),
+				},
+			},
+		},
+
+		&gengogenerator.DefaultPackage{
+			PackageName: "internal",
+			PackagePath: fmt.Sprintf("%s/%s/internal", group.serverBasePkg, group.name),
+
+			// TODO wkpo generators?
+			// types.go (if doesn't exist)
+			// types_generated.go
+			GeneratorList: []gengogenerator.Generator{
+				gengogenerator.DefaultGen{
+					OptionalName: "wkpo.go",
+					OptionalBody: []byte("coucou"),
+				},
+			},
+		},
+	}
+
+	for _, version := range group.versions {
+		packages = append(packages,
+			&gengogenerator.DefaultPackage{
+				PackageName: version.Name,
+				PackagePath: fmt.Sprintf("%s/%s/internal/%s", group.serverBasePkg, group.name, version.Name),
+
+				// TODO wkpo generators?
+				// conversion_generated.go
+				// server_generated.go
+				// conversion.go (if doesn't exist)
+				GeneratorList: []gengogenerator.Generator{
+					gengogenerator.DefaultGen{
+						OptionalName: "wkpo.go",
+						OptionalBody: []byte("coucou"),
+					},
+				},
+			},
+
+			&gengogenerator.DefaultPackage{
+				PackageName: version.Name,
+				PackagePath: fmt.Sprintf("%s/%s/%s", group.clientBasePkg, group.name, version.Name),
+
+				// TODO wkpo generators?
+				// conversion_generated.go
+				// server_generated.go
+				// conversion.go (if doesn't exist)
+				GeneratorList: []gengogenerator.Generator{
+					gengogenerator.DefaultGen{
+						OptionalName: "wkpo.go",
+						OptionalBody: []byte("coucou"),
+					},
+				},
+			},
+		)
+	}
+
+	return packages
 }
 
 // lookForAPIGroupDefinitions iterates over the context's list of package paths,
@@ -111,7 +182,7 @@ func Packages(context *generator.Context, arguments *args.GeneratorArgs) generat
 //  * clientBasePkg: defaults to defaultClientBasePkg
 // for example,
 // +csi-proxy-gen=groupName:dummy,serverBasePkg:github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server,clientBasePkg:github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client
-func lookForAPIGroupDefinitions(context *generator.Context) map[string]*groupDefinition {
+func lookForAPIGroupDefinitions(context *gengogenerator.Context) map[string]*groupDefinition {
 	pkgPaths := context.Inputs
 
 	// first, re-order the inputs by lengths, so that we always process parent packages first

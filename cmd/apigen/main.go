@@ -48,5 +48,8 @@ func buildArgs() *args.GeneratorArgs {
 		}
 	}
 
+	// TODO wkpo check que pas d'output, vu que bah...
+	// TODO wkpo check other args
+
 	return genericArgs
 }
