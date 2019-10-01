@@ -2,6 +2,8 @@ package generators
 
 // TODO wkpo remove logrus from go.mod/sum...?
 // TODO wkpo logrus => klog!
+// TODO wkpo check bootstrap, even better write a test on it
+// TODO wkpo files header!!
 
 import (
 	"regexp"
@@ -9,8 +11,7 @@ import (
 	"strings"
 
 	"k8s.io/gengo/args"
-	// TODO wkpo
-	// conversiongenerator "k8s.io/gengo/examples/conversion-gen/generators/generator"
+	conversiongenerator "k8s.io/gengo/examples/conversion-gen/generators/generator"
 	"k8s.io/gengo/generator"
 	"k8s.io/gengo/namer"
 	"k8s.io/gengo/types"
@@ -111,11 +112,17 @@ func generatorPackagesForGroup(group *groupDefinition) generator.Packages {
 				// conversion_generated.go => types!
 				// server_generated.go
 				// conversion.go (if doesn't exist)
-				GeneratorList: []generator.Generator{
-					generator.DefaultGen{
-						OptionalName: "wkpo",
-						OptionalBody: []byte("// coucou"),
-					},
+				GeneratorFunc: func(context *generator.Context) []generator.Generator {
+					// TODO wkpo options on the conversion generator!!
+					conversionGenerator, err := conversiongenerator.NewConversionGenerator(context, "wkpo_conversion", version.Path,
+						group.versionedServerPkg(version.Name), []string{group.internalServerPkg()}, nil)
+					if err != nil {
+						klog.Fatalf("unable to create conversion generator: %v", err)
+					}
+
+					return []generator.Generator{
+						conversionGenerator,
+					}
 				},
 			},
 

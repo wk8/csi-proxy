@@ -17,6 +17,7 @@ type groupDefinition struct {
 	versions      []*apiVersion
 	// serverCallbacks maps callbacks to their definitions, with all the
 	// versioned types replaced with internal types.
+	// Using an ordered map allows deterministic generations.
 	serverCallbacks *orderedmap.OrderedMap
 }
 
@@ -27,6 +28,7 @@ type apiVersion struct {
 	topLevelTypes *orderedmap.OrderedMap
 	// serverCallbacks maps callbacks to their definitions
 	// TODO wkpo used?
+	// TODO wkpo needs to be ordered?
 	serverCallbacks *orderedmap.OrderedMap
 }
 
