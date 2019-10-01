@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	goflag "flag"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"k8s.io/gengo/args"
+	"k8s.io/klog"
 
 	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/generators"
 	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
@@ -14,17 +14,17 @@ import (
 
 func main() {
 	// TODO wkpo mouaif
-	logrus.SetLevel(logrus.DebugLevel)
+	klog.InitFlags(nil)
 
 	if err := buildArgs().Execute(
 		generators.NameSystems(),
 		generators.DefaultNameSystem(),
 		generators.Packages,
 	); err != nil {
-		logrus.Fatalf("Error: %v", err)
+		klog.Fatalf("Error: %v", err)
 	}
 
-	logrus.Infof("wkpo bordel")
+	klog.Infof("wkpo bordel")
 }
 
 func buildArgs() *args.GeneratorArgs {
