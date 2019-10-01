@@ -16,7 +16,7 @@ type groupDefinition struct {
 	clientBasePkg string
 	versions      []*apiVersion
 	// serverCallbacks maps callbacks to their definitions, with all the
-	// versioned types
+	// versioned types replaced with internal types.
 	serverCallbacks *orderedmap.OrderedMap
 }
 
@@ -26,6 +26,7 @@ type apiVersion struct {
 	// topLevelTypes maps type names to their definitions
 	topLevelTypes *orderedmap.OrderedMap
 	// serverCallbacks maps callbacks to their definitions
+	// TODO wkpo used?
 	serverCallbacks *orderedmap.OrderedMap
 }
 
@@ -80,12 +81,34 @@ func (d *groupDefinition) addVersion(versionPkg *types.Package) {
 	}
 }
 
-// TODO wkpo name? comment? move somewhere else?
-
 // serverInterfaceName is the name of the server interface for this API group
 // that we expect to find in each version's package.
 func (d *groupDefinition) serverInterfaceName() string {
 	return fmt.Sprintf("%sServer", strcase.ToCamel(d.name))
+}
+
+// serverPkg returns the path of the server package, e.g.
+// github.com/kubernetes-csi/csi-proxy/internal/server/<api_group_name>
+func (d *groupDefinition) serverPkg() string {
+	return fmt.Sprintf("%s/%s", d.serverBasePkg, d.name)
+}
+
+// internalServerPkg returns the path of the internal server package, e.g.
+// github.com/kubernetes-csi/csi-proxy/internal/server/<api_group_name>/internal
+func (d *groupDefinition) internalServerPkg() string {
+	return fmt.Sprintf("%s/%s/internal", d.serverBasePkg, d.name)
+}
+
+// versionedServerPkg returns the path of the versioned server package, e.g.
+// github.com/kubernetes-csi/csi-proxy/internal/server/<api_group_name>/internal/<version>
+func (d *groupDefinition) versionedServerPkg(version string) string {
+	return fmt.Sprintf("%s/%s/internal/%s", d.serverBasePkg, d.name, version)
+}
+
+// versionedClientPkg returns the path of the versioned client package, e.g.
+// github.com/kubernetes-csi/csi-proxy/client/groups/<api_group_name>/<version>
+func (d *groupDefinition) versionedClientPkg(version string) string {
+	return fmt.Sprintf("%s/%s/%s", d.clientBasePkg, d.name, version)
 }
 
 func (d *groupDefinition) String() string {

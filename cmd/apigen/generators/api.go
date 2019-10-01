@@ -4,7 +4,6 @@ package generators
 // TODO wkpo logrus => klog!
 
 import (
-	"fmt"
 	"regexp"
 	"sort"
 	"strings"
@@ -71,22 +70,23 @@ func generatorPackagesForGroup(group *groupDefinition) generator.Packages {
 	packages := generator.Packages{
 		&generator.DefaultPackage{
 			PackageName: internal.SnakeCaseToPackageName(group.name),
-			PackagePath: fmt.Sprintf("%s/%s", group.serverBasePkg, group.name),
+			PackagePath: group.serverPkg(),
 
 			// TODO wkpo generators?
-			// api_group_generated.go        => def
 			// server.go (if doesn't exist)  => def + callbacks
 			GeneratorList: []generator.Generator{
-				generator.DefaultGen{
-					OptionalName: "wkpo",
-					OptionalBody: []byte("// coucou"),
+				&apiGroupsGeneratedGenerator{
+					DefaultGen: generator.DefaultGen{
+						OptionalName: "api_group_generated",
+					},
+					groupDefinition: group,
 				},
 			},
 		},
 
 		&generator.DefaultPackage{
 			PackageName: "internal",
-			PackagePath: fmt.Sprintf("%s/%s/internal", group.serverBasePkg, group.name),
+			PackagePath: group.internalServerPkg(),
 
 			// TODO wkpo generators?
 			// types.go (if doesn't exist)  => def + types (from callbacks?)
@@ -105,7 +105,7 @@ func generatorPackagesForGroup(group *groupDefinition) generator.Packages {
 		packages = append(packages,
 			&generator.DefaultPackage{
 				PackageName: version.Name,
-				PackagePath: fmt.Sprintf("%s/%s/internal/%s", group.serverBasePkg, group.name, version.Name),
+				PackagePath: group.versionedServerPkg(version.Name),
 
 				// TODO wkpo generators?
 				// conversion_generated.go => types!
@@ -121,7 +121,7 @@ func generatorPackagesForGroup(group *groupDefinition) generator.Packages {
 
 			&generator.DefaultPackage{
 				PackageName: version.Name,
-				PackagePath: fmt.Sprintf("%s/%s/%s", group.clientBasePkg, group.name, version.Name),
+				PackagePath: group.versionedClientPkg(version.Name),
 
 				// TODO wkpo generators?
 				// client_generated.go
