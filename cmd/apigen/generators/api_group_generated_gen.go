@@ -54,6 +54,7 @@ func (s *Server) VersionedAPIs() []*server.VersionedAPI {
 		versions[i] = vsn.Name
 	}
 	sort.Slice(versions, func(i, j int) bool {
+		// TODO wkpo ce serait mieux de faire versions une []apiversion.Version non?
 		return apiversion.NewVersionOrPanic(versions[i]).Compare(apiversion.NewVersionOrPanic(versions[j])) == apiversion.Lesser
 	})
 

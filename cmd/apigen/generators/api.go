@@ -27,6 +27,8 @@ import (
 
 // TODO wkpo PR on gengo to allow generators to say they don't want to overwrite a file?
 
+// TODO wkpo amend le conversion gen pour regarder le comment
+
 // TODO wkpo comments?
 const (
 	defaultServerBasePkg = internal.CSIProxyRootPath + "/internal/server"

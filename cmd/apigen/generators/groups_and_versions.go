@@ -61,6 +61,11 @@ func (d *groupDefinition) addVersion(versionPkg *types.Package) {
 	d.versions = append(d.versions, version)
 
 	for callbackName, versionedCallback := range serverInterface.Methods {
+		// TODO wkpo next from here, check que chaque callback:
+		// * pour chaque arg, s'il est isVersionedVariable, should be a pointer
+		// * pour le retour, chaque should be a pointer, and the last error!
+		// puis revisiter server_generated
+
 		version.serverCallbacks.Set(callbackName, versionedCallback)
 
 		serverCallback := internal.ReplaceTypesPackage(versionedCallback, versionPkg.Path, internal.PkgPlaceholder)
@@ -118,7 +123,7 @@ func (d *groupDefinition) versionedClientPkg(version string) string {
 // versionedAPIPkg returns the path to the versioned API package, e.g.
 // github.com/kubernetes-csi/csi-proxy/client/api/<api_group_name>/<version>
 func (d *groupDefinition) versionedAPIPkg(version string) string {
-	return fmt.Sprintf("wkpo_bordel_%s/%s", d.apiBasePkg, version)
+	return fmt.Sprintf("%s/%s", d.apiBasePkg, version)
 }
 
 func (d *groupDefinition) String() string {
