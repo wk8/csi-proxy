@@ -12,6 +12,7 @@ import (
 // TODO wkpo comment?
 type groupDefinition struct {
 	name          string
+	apiBasePkg    string
 	serverBasePkg string
 	clientBasePkg string
 	versions      []*apiVersion
@@ -32,9 +33,10 @@ type apiVersion struct {
 	serverCallbacks *orderedmap.OrderedMap
 }
 
-func newGroupDefinition(name string) *groupDefinition {
+func newGroupDefinition(name, apiBasePkg string) *groupDefinition {
 	return &groupDefinition{
 		name:            name,
+		apiBasePkg:      apiBasePkg,
 		serverBasePkg:   defaultServerBasePkg,
 		clientBasePkg:   defaultClientBasePkg,
 		serverCallbacks: orderedmap.New(),
@@ -111,6 +113,12 @@ func (d *groupDefinition) versionedServerPkg(version string) string {
 // github.com/kubernetes-csi/csi-proxy/client/groups/<api_group_name>/<version>
 func (d *groupDefinition) versionedClientPkg(version string) string {
 	return fmt.Sprintf("%s/%s/%s", d.clientBasePkg, d.name, version)
+}
+
+// versionedAPIPkg returns the path to the versioned API package, e.g.
+// github.com/kubernetes-csi/csi-proxy/client/api/<api_group_name>/<version>
+func (d *groupDefinition) versionedAPIPkg(version string) string {
+	return fmt.Sprintf("wkpo_bordel_%s/%s", d.apiBasePkg, version)
 }
 
 func (d *groupDefinition) String() string {

@@ -18,11 +18,11 @@ type apiGroupsGeneratedGenerator struct {
 	groupDefinition *groupDefinition
 }
 
-func (g *apiGroupsGeneratedGenerator) Filter(_ *generator.Context, t *types.Type) bool {
+func (g *apiGroupsGeneratedGenerator) Filter(*generator.Context, *types.Type) bool {
 	return false
 }
 
-func (g *apiGroupsGeneratedGenerator) Imports(_ *generator.Context) []string {
+func (g *apiGroupsGeneratedGenerator) Imports(*generator.Context) []string {
 	imports := []string{
 		"github.com/kubernetes-csi/csi-proxy/client/apiversion",
 		"github.com/kubernetes-csi/csi-proxy/internal/server",

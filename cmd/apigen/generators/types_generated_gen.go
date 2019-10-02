@@ -16,11 +16,11 @@ type typesGeneratedGenerator struct {
 	groupDefinition *groupDefinition
 }
 
-func (g *typesGeneratedGenerator) Filter(_ *generator.Context, t *types.Type) bool {
+func (g *typesGeneratedGenerator) Filter(*generator.Context, *types.Type) bool {
 	return false
 }
 
-func (g *typesGeneratedGenerator) Imports(_ *generator.Context) []string {
+func (g *typesGeneratedGenerator) Imports(*generator.Context) []string {
 	return []string{
 		"context",
 		"google.golang.org/grpc",
@@ -42,6 +42,7 @@ type ServerInterface interface {
 	for pair := g.groupDefinition.serverCallbacks.Oldest(); pair != nil; pair = pair.Next() {
 		callbackName := pair.Key.(string)
 		callback := internal.ReplaceTypesPackage(pair.Value.(*types.Type), internal.PkgPlaceholder, "")
+
 		snippetWriter.Do(callbackName+"(", nil)
 		for _, param := range callback.Signature.Parameters {
 			snippetWriter.Do("$.Name.String$, ", param)

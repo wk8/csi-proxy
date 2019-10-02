@@ -111,12 +111,11 @@ func generatorPackagesForGroup(group *groupDefinition) generator.Packages {
 				PackagePath: group.versionedServerPkg(version.Name),
 
 				// TODO wkpo generators?
-				// conversion_generated.go => types!
 				// server_generated.go
 				// conversion.go (if doesn't exist)
 				GeneratorFunc: func(context *generator.Context) []generator.Generator {
 					// TODO wkpo options on the conversion generator!!
-					conversionGenerator, err := conversiongenerator.NewConversionGenerator(context, "wkpo_conversion", vsn.Path,
+					conversionGenerator, err := conversiongenerator.NewConversionGenerator(context, "conversion_generated", vsn.Path,
 						group.versionedServerPkg(vsn.Name), []string{group.internalServerPkg()}, nil)
 					if err != nil {
 						klog.Fatalf("unable to create conversion generator: %v", err)
@@ -124,6 +123,13 @@ func generatorPackagesForGroup(group *groupDefinition) generator.Packages {
 
 					return []generator.Generator{
 						conversionGenerator,
+						&serverGeneratedGenerator{
+							DefaultGen: generator.DefaultGen{
+								OptionalName: "wkpo_server_generated",
+							},
+							groupDefinition: group,
+							version:         vsn,
+						},
 					}
 				},
 			},
@@ -210,7 +216,7 @@ func findAPIGroupDefinitions(context *generator.Context) map[string]*groupDefini
 func buildAPIGroupDefinitionFromDocComment(pkgPath string, pkg *types.Package, groups map[string]*groupDefinition) bool {
 	for _, commentLine := range pkg.Comments {
 		if matches := markerCommentRegex.FindStringSubmatch(commentLine); matches != nil {
-			definition := newGroupDefinition(pkg.Name)
+			definition := newGroupDefinition(pkg.Name, pkg.Path)
 
 			if len(matches) >= 2 {
 				for _, option := range strings.Split(matches[1], ",") {
@@ -267,7 +273,7 @@ func buildCanonicalAPIGroupDefinition(pkgPath string, pkg *types.Package, groups
 	definition, present := groups[groupPath]
 	if !present {
 		klog.V(5).Infof("Found API group %q", parts[0])
-		definition = newGroupDefinition(parts[0])
+		definition = newGroupDefinition(parts[0], internal.CSIProxyAPIPath+parts[0])
 		groups[groupPath] = definition
 	}
 	definition.addVersion(pkg)
