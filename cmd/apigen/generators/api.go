@@ -103,6 +103,8 @@ func generatorPackagesForGroup(group *groupDefinition) generator.Packages {
 	}
 
 	for _, version := range group.versions {
+		// go closures...
+		vsn := version
 		packages = append(packages,
 			&generator.DefaultPackage{
 				PackageName: version.Name,
@@ -114,8 +116,8 @@ func generatorPackagesForGroup(group *groupDefinition) generator.Packages {
 				// conversion.go (if doesn't exist)
 				GeneratorFunc: func(context *generator.Context) []generator.Generator {
 					// TODO wkpo options on the conversion generator!!
-					conversionGenerator, err := conversiongenerator.NewConversionGenerator(context, "wkpo_conversion", version.Path,
-						group.versionedServerPkg(version.Name), []string{group.internalServerPkg()}, nil)
+					conversionGenerator, err := conversiongenerator.NewConversionGenerator(context, "wkpo_conversion", vsn.Path,
+						group.versionedServerPkg(vsn.Name), []string{group.internalServerPkg()}, nil)
 					if err != nil {
 						klog.Fatalf("unable to create conversion generator: %v", err)
 					}

@@ -30,6 +30,8 @@ github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJyk=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
+github.com/wk8/gengo v0.0.0-20191001015530-2c8d7500e6ee7d247f53ce7f3bbc91a7105291ec h1:6KeSaGz/wSKhfj8cbqMqMiVkVYmj3ZJ6q91gpsMo41w=
+github.com/wk8/gengo v0.0.0-20191001015530-2c8d7500e6ee7d247f53ce7f3bbc91a7105291ec/go.mod h1:7+jn4yanRF/Ylvd5qyNPUq0VhvOMDhjXrViFtHMcHxI=
 github.com/wk8/gengo v0.0.0-20191001015530-ff2b250b6d776733e49d18ac40a2d6d44ee5ed6d h1:cEa0xk9QtGry9h2wcRmEb8nQZGYfJPeXeDl/v3ZXEMw=
 github.com/wk8/gengo v0.0.0-20191001015530-ff2b250b6d776733e49d18ac40a2d6d44ee5ed6d/go.mod h1:7+jn4yanRF/Ylvd5qyNPUq0VhvOMDhjXrViFtHMcHxI=
 github.com/wk8/go-ordered-map v0.1.0 h1:SlBlm5TXqq7Li9BTIzVF37Jn0vUvuNbeHuSTaf+zBK0=

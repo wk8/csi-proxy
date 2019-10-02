@@ -19,5 +19,8 @@ require (
 
 replace (
 	github.com/kubernetes-csi/csi-proxy/client => ./client
-	k8s.io/gengo => github.com/wk8/gengo v0.0.0-20191001015530-ff2b250b6d776733e49d18ac40a2d6d44ee5ed6d
+	// using my fork of gengo until
+	// https://github.com/kubernetes/gengo/pull/155#issuecomment-537589085
+	// is implemented, and the generic conversion generator merged into code-generator
+	k8s.io/gengo => github.com/wk8/gengo v0.0.0-20191001015530-2c8d7500e6ee7d247f53ce7f3bbc91a7105291ec
 )
