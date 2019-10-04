@@ -1,6 +1,7 @@
 package generators
 
 // TODO wkpo check all goddamn imports.....
+// TODO wkpo on devrait pas avoir besoin de fmt aqui...
 import (
 	"fmt"
 	"github.com/iancoleman/strcase"
@@ -65,12 +66,6 @@ func shortName(t *types.Type) string {
 	return result
 }
 
-// TODO wkpo comment? move to utils?
-func isVersionedVariable(t *types.Type, version *apiVersion) bool {
-	return strings.Contains(t.Name.Name, version.Path) ||
-		strings.Contains(t.Name.Package, version.Path)
-}
-
 // TODO wkpo comment?
 type rawNameNamer struct{}
 
@@ -121,12 +116,13 @@ func NewVersionedServer(apiGroupServer internal.ServerInterface) internal.Versio
 }
 
 func (s *versionedAPI) Register(grpcServer *grpc.Server) {
-	%s.RegisterDummyServer(grpcServer, s) // TODO wkpo NOPE! pas dummy! group name!
+	%s.Register%sServer(grpcServer, s)
 }
 
-`, g.version.Name, g.version.Name), nil)
+`, g.version.Name, g.version.Name, strcase.ToCamel(g.groupDefinition.name)), nil)
 
 	// write a request handler for each server callback
+	// TODO wkpo break that up?
 	for pair := g.version.serverCallbacks.Oldest(); pair != nil; pair = pair.Next() {
 		callbackName := pair.Key.(string)
 		callback := pair.Value.(*types.Type)
@@ -137,56 +133,62 @@ func (s *versionedAPI) Register(grpcServer *grpc.Server) {
 			snippetWriter.Do("$.|versionedVariable$, ", param)
 		}
 		snippetWriter.Do(") (", nil)
-		for _, result := range callback.Signature.Results {
-			snippetWriter.Do("$.|versioned$, ", result)
+		for _, returnValue := range callback.Signature.Results {
+			snippetWriter.Do("$.|versioned$, ", returnValue)
 		}
 		snippetWriter.Do(") {\n", nil)
+
+		// when returning errors from conversion
+		returnErrLine := "return " + strings.Repeat("nil, ", len(callback.Signature.Results)-1) + "err"
 
 		// then convert all versioned arguments to internal structs
 		for _, param := range callback.Signature.Parameters {
 			if !isVersionedVariable(param, g.version) {
 				continue
 			}
-			// TODO wkpo check que c un pointer quand on parse initially!!
-			// TODO wkpo only if versioned var...
 			snippetWriter.Do(fmt.Sprintf("%s := &internal.$.|rawName${}\n", shortName(param)), param)
 			snippetWriter.Do(fmt.Sprintf("if err := Convert_%s_$.|rawName$_To_internal_$.|rawName$(%s, %s); err != nil {\n",
 				g.version.Name, varName(param, g.version), shortName(param)), param)
-			// TODO wkpo check qu'on returne toujours pointer, err?
-			// TODO wkpo simplifier le code based on ^ ...?
-			snippetWriter.Do("return nil, err\n}\n", nil)
+			snippetWriter.Do(returnErrLine+"\n}\n", nil)
 		}
 		snippetWriter.Do("\n", nil)
 
 		// call the internal server
-		for i, result := range callback.Signature.Results {
+		for i, returnValue := range callback.Signature.Results {
 			if i != 0 {
 				snippetWriter.Do(", ", nil)
 			}
-			snippetWriter.Do(shortName(result), nil)
+			snippetWriter.Do(shortName(returnValue), nil)
 		}
 		snippetWriter.Do(fmt.Sprintf(" := s.apiGroupServer.%s(", callbackName), nil)
 		for _, param := range callback.Signature.Parameters {
 			snippetWriter.Do(fmt.Sprintf("%s, ", shortName(param)), nil)
 		}
-		snippetWriter.Do("version)\nif err != nil {\nreturn nil, err\n}\n\n", nil)
+		snippetWriter.Do("version)\nif err != nil {\n"+returnErrLine+"\n}\n\n", nil)
 
 		// convert all internal return values to versioned structs
-		for _, result := range callback.Signature.Results {
-			if !isVersionedVariable(result, g.version) {
+		for _, returnValue := range callback.Signature.Results {
+			if !isVersionedVariable(returnValue, g.version) {
 				continue
 			}
-			snippetWriter.Do(fmt.Sprintf("%s := &%s.$.|rawName${}\n", varName(result, g.version), g.version.Name), result)
+			snippetWriter.Do(fmt.Sprintf("%s := &%s.$.|rawName${}\n", varName(returnValue, g.version), g.version.Name), returnValue)
 			snippetWriter.Do(fmt.Sprintf("if err := Convert_internal_$.|rawName$_To_%s_$.|rawName$(%s, %s); err != nil {\n",
-				g.version.Name, shortName(result), varName(result, g.version)), result)
-			// TODO wkpo assumptions here...?
-			snippetWriter.Do("return nil, err\n}\n", nil)
+				g.version.Name, shortName(returnValue), varName(returnValue, g.version)), returnValue)
+			snippetWriter.Do(returnErrLine+"\n}\n", nil)
+		}
+		snippetWriter.Do("\n", nil)
+
+		// return values
+		snippetWriter.Do("return ", nil)
+		for i, returnValue := range callback.Signature.Results {
+			if i != 0 {
+				snippetWriter.Do(", ", nil)
+			}
+			snippetWriter.Do(varName(returnValue, g.version), nil)
 		}
 
-		// TODO wkpo from here
-
 		// end of the request handler
-		snippetWriter.Do("}\n\n", nil)
+		snippetWriter.Do("\n}\n\n", nil)
 	}
 
 	return snippetWriter.Error()

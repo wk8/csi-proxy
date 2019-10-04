@@ -1,5 +1,6 @@
 package generators
 
+// TODO wkpo on devrait pas avoir besoin de fmt aqui...
 import (
 	"fmt"
 	"github.com/iancoleman/strcase"
@@ -7,6 +8,7 @@ import (
 	"github.com/wk8/go-ordered-map"
 	"k8s.io/gengo/types"
 	"k8s.io/klog"
+	"strings"
 )
 
 // TODO wkpo comment?
@@ -61,15 +63,11 @@ func (d *groupDefinition) addVersion(versionPkg *types.Package) {
 	d.versions = append(d.versions, version)
 
 	for callbackName, versionedCallback := range serverInterface.Methods {
-		// TODO wkpo next from here, check que chaque callback:
-		// * pour chaque arg, s'il est isVersionedVariable, should be a pointer
-		// * pour le retour, chaque should be a pointer, and the last error!
-		// puis revisiter server_generated
+		d.validateServerCallback(callbackName, versionedCallback, version)
 
 		version.serverCallbacks.Set(callbackName, versionedCallback)
 
 		serverCallback := internal.ReplaceTypesPackage(versionedCallback, versionPkg.Path, internal.PkgPlaceholder)
-		klog.Infof("wkpo bordel de merde after change: %s", serverCallback)
 
 		if previousCallbackRaw, alreadyPresent := d.serverCallbacks.Get(callbackName); alreadyPresent {
 			previousCallback := previousCallbackRaw.(*types.Type)
@@ -88,6 +86,35 @@ func (d *groupDefinition) addVersion(versionPkg *types.Package) {
 			d.serverCallbacks.Set(callbackName, serverCallback)
 		}
 	}
+}
+
+// validateServerCallback checks that server callbacks have the expected shape, i.e.:
+// * all versioned (i.e. in the same package) parameter should be pointers
+// * return values should all be pointers, except for the last one, that must be an error
+// These assumptions are
+func (d *groupDefinition) validateServerCallback(callbackName string, callback *types.Type, version *apiVersion) {
+	for _, param := range callback.Signature.Parameters {
+		if isVersionedVariable(param, version) && param.Kind != types.Pointer {
+			klog.Fatalf("Server callback %s in API %s version %s has a non-pointer versioned parameter: %v",
+				callbackName, d.name, version.Name, param)
+		}
+	}
+	for i, returnValue := range callback.Signature.Results {
+		if i == len(callback.Signature.Results)-1 {
+			if !isError(returnValue) {
+				klog.Fatalf("The last returned value for server callback %s in API %s version %s should be an error, found %v instead",
+					callbackName, d.name, version.Name, returnValue)
+			}
+		} else if returnValue.Kind != types.Pointer {
+			klog.Fatalf("Server callback %s in API %s version %s has a non-pointer return value: %v",
+				callbackName, d.name, version.Name, returnValue)
+		}
+	}
+}
+
+// isError returns true iff type t is the built-in type "error"
+func isError(t *types.Type) bool {
+	return t.Kind == types.Interface && t.Name.Name == "error" && t.Name.Package == ""
 }
 
 // serverInterfaceName is the name of the server interface for this API group
@@ -150,4 +177,10 @@ func (d *groupDefinition) String() string {
 		result = result[:len(result)-1] + "]"
 	}
 	return result + "}"
+}
+
+// isVersionedVariable returns true iff t belongs to the version package.
+func isVersionedVariable(t *types.Type, version *apiVersion) bool {
+	return strings.Contains(t.Name.Name, version.Path) ||
+		strings.Contains(t.Name.Package, version.Path)
 }

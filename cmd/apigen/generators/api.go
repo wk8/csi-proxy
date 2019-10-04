@@ -43,9 +43,8 @@ var markerCommentRegex = regexp.MustCompile(`^\s*(?://)?\s*` + regexp.QuoteMeta(
 func NameSystems() namer.NameSystems {
 	// TODO wkpo? which are used?
 	return namer.NameSystems{
-		"public":  namer.NewPublicNamer(0),
-		"raw":     namer.NewRawNamer("", nil),
-		"private": namer.NewPrivateNamer(0),
+		"public": namer.NewPublicNamer(0),
+		"short":  &shortNamer{},
 	}
 }
 
@@ -53,6 +52,24 @@ func NameSystems() namer.NameSystems {
 // processed by the generators in this package.
 func DefaultNameSystem() string {
 	return "public"
+}
+
+// TODO wkpo comment?
+type shortNamer struct{}
+
+func (*shortNamer) Name(t *types.Type) string {
+	// TODO wkpo inline shortName here? and get rid of non-templated usages?
+	return shortName(t)
+}
+
+// TODO wkpo comment?
+type shortenVersionPackageNamer struct {
+	version *apiVersion
+}
+
+func (n *shortenVersionPackageNamer) Name(t *types.Type) string {
+	// TODO wkpo inline shortenPackagePath here? and get rid of non-templated usages?
+	return shortenPackagePath(t, n.version.Package)
 }
 
 func Packages(context *generator.Context, arguments *args.GeneratorArgs) (packages generator.Packages) {
@@ -113,7 +130,6 @@ func generatorPackagesForGroup(group *groupDefinition) generator.Packages {
 				PackagePath: group.versionedServerPkg(version.Name),
 
 				// TODO wkpo generators?
-				// server_generated.go
 				// conversion.go (if doesn't exist)
 				GeneratorFunc: func(context *generator.Context) []generator.Generator {
 					// TODO wkpo options on the conversion generator!!
@@ -127,7 +143,7 @@ func generatorPackagesForGroup(group *groupDefinition) generator.Packages {
 						conversionGenerator,
 						&serverGeneratedGenerator{
 							DefaultGen: generator.DefaultGen{
-								OptionalName: "wkpo_server_generated",
+								OptionalName: "server_generated",
 							},
 							groupDefinition: group,
 							version:         vsn,
@@ -140,12 +156,13 @@ func generatorPackagesForGroup(group *groupDefinition) generator.Packages {
 				PackageName: version.Name,
 				PackagePath: group.versionedClientPkg(version.Name),
 
-				// TODO wkpo generators?
-				// client_generated.go
 				GeneratorList: []generator.Generator{
-					generator.DefaultGen{
-						OptionalName: "wkpo",
-						OptionalBody: []byte("// coucou"),
+					&clientGeneratedGenerator{
+						DefaultGen: generator.DefaultGen{
+							OptionalName: "client_generated",
+						},
+						groupDefinition: group,
+						version:         vsn,
 					},
 				},
 			},

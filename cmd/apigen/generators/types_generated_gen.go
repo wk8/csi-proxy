@@ -49,8 +49,8 @@ type ServerInterface interface {
 		}
 		// add the version parameter
 		snippetWriter.Do("apiversion.Version) (", nil)
-		for _, result := range callback.Signature.Results {
-			snippetWriter.Do("$.Name.String$, ", result)
+		for _, returnValue := range callback.Signature.Results {
+			snippetWriter.Do("$.Name.String$, ", returnValue)
 		}
 		snippetWriter.Do(")\n", nil)
 	}
