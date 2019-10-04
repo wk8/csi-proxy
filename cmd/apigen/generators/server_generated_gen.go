@@ -2,6 +2,7 @@ package generators
 
 // TODO wkpo check all goddamn imports.....
 // TODO wkpo on devrait pas avoir besoin de fmt aqui...
+// TODO wkpo next clean up this mess.... namers/fmt!!
 import (
 	"fmt"
 	"github.com/iancoleman/strcase"

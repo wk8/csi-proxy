@@ -77,6 +77,10 @@ func Packages(context *generator.Context, arguments *args.GeneratorArgs) (packag
 	groups := findAPIGroupDefinitions(context)
 	klog.V(5).Infof("Found API groups: %v", groups)
 
+	// we create doc.go files in packages that might be empty otherwise, which
+	// would make the generator cough otherwise
+	// TODO wkpo next create doc.go files before creating the generators!!
+
 	for _, group := range groups {
 		packages = append(packages, generatorPackagesForGroup(group)...)
 	}

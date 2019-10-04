@@ -1,9 +1,7 @@
 package generators
 
 // TODO wkpo check all goddamn imports.....
-// TODO wkpo on devrait pas avoir besoin de fmt aqui...
 import (
-	"fmt"
 	"github.com/kubernetes-csi/csi-proxy/client/apiversion"
 	"io"
 	"k8s.io/gengo/generator"
@@ -40,7 +38,7 @@ func (g *apiGroupsGeneratedGenerator) Imports(*generator.Context) []string {
 func (g *apiGroupsGeneratedGenerator) Init(context *generator.Context, writer io.Writer) error {
 	snippetWriter := generator.NewSnippetWriter(writer, context, "$", "$")
 
-	snippetWriter.Do(fmt.Sprintf("const name = %q", g.groupDefinition.name), nil)
+	snippetWriter.Do(`const name = "$.$"`, g.groupDefinition.name)
 
 	snippetWriter.Do(`
 
@@ -60,17 +58,17 @@ func (s *Server) VersionedAPIs() []*server.VersionedAPI {
 	})
 
 	for _, version := range versions {
-		snippetWriter.Do(fmt.Sprintf("%sServer := %s.NewVersionedServer(s)\n", version, version), nil)
+		snippetWriter.Do("$.$Server := $.$.NewVersionedServer(s)\n", version)
 	}
 
 	snippetWriter.Do("\n\nreturn []*server.VersionedAPI{\n", nil)
 	for _, version := range versions {
-		snippetWriter.Do(fmt.Sprintf(`{
+		snippetWriter.Do(`{
 				Group:      name,
-				Version:    apiversion.NewVersionOrPanic(%q),
-				Registrant: %sServer.Register,
+				Version:    apiversion.NewVersionOrPanic("$.$"),
+				Registrant: $.$Server.Register,
 			},
-			`, version, version), nil)
+			`, version)
 	}
 	snippetWriter.Do("\n}\n}\n", nil)
 
