@@ -1,6 +1,5 @@
 package generators
 
-// TODO wkpo on devrait pas avoir besoin de fmt aqui...
 import (
 	"fmt"
 	"github.com/iancoleman/strcase"
@@ -153,6 +152,7 @@ func (d *groupDefinition) versionedAPIPkg(version string) string {
 	return fmt.Sprintf("%s/%s", d.apiBasePkg, version)
 }
 
+// handy for logging/debugging
 func (d *groupDefinition) String() string {
 	if d == nil {
 		return "<nil>"
