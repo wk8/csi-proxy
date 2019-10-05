@@ -7,7 +7,7 @@ package generators
 
 // TODO wkpo repeatable builds!!!
 // TODO wkpo check with:
-// i=0; while true; do echo "### $i successful so far"; i=$(( i + 1 )); find . -name '*generated.go' -exec rm -v {} \; ; time go run github.com/kubernetes-csi/csi-proxy/cmd/apigen -i github.com/kubernetes-csi/csi-proxy/client/api,github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/api/dummy -v 8 && git diff --quiet HEAD && continue ; echo "### failed at attempt $i"; break; done
+// i=0; while true; do echo "### $i successful so far"; i=$(( i + 1 )); time go run github.com/kubernetes-csi/csi-proxy/cmd/apigen -i github.com/kubernetes-csi/csi-proxy/client/api,github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/api/dummy -v 8 && git diff --quiet HEAD && continue ; echo "### failed at attempt $i"; break; done
 
 import (
 	"fmt"

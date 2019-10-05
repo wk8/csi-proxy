@@ -48,13 +48,12 @@ var _ internal.ServerInterface = &Server{}
 func (s *Server) VersionedAPIs() []*server.VersionedAPI {
 `, nil)
 
-	versions := make([]string, len(g.groupDefinition.versions))
+	versions := make([]apiversion.Version, len(g.groupDefinition.versions))
 	for i, vsn := range g.groupDefinition.versions {
-		versions[i] = vsn.Name
+		versions[i] = apiversion.NewVersionOrPanic(vsn.Name)
 	}
 	sort.Slice(versions, func(i, j int) bool {
-		// TODO wkpo ce serait mieux de faire versions une []apiversion.Version non?
-		return apiversion.NewVersionOrPanic(versions[i]).Compare(apiversion.NewVersionOrPanic(versions[j])) == apiversion.Lesser
+		return versions[i].Compare(versions[j]) == apiversion.Lesser
 	})
 
 	for _, version := range versions {
@@ -68,7 +67,7 @@ func (s *Server) VersionedAPIs() []*server.VersionedAPI {
 				Version:    apiversion.NewVersionOrPanic("$.$"),
 				Registrant: $.$Server.Register,
 			},
-			`, version)
+			`, version.String())
 	}
 	snippetWriter.Do("\n}\n}\n", nil)
 
