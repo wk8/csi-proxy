@@ -47,8 +47,9 @@ var markerCommentRegex = regexp.MustCompile(`^\s*(?://)?\s*` + regexp.QuoteMeta(
 func NameSystems() namer.NameSystems {
 	// TODO wkpo? which are used?
 	return namer.NameSystems{
-		"public": namer.NewPublicNamer(0),
-		"short":  &shortNamer{},
+		"public":        namer.NewPublicNamer(0),
+		"removePackage": &removePackageNamer{},
+		"short":         &shortNamer{},
 	}
 }
 
@@ -56,24 +57,6 @@ func NameSystems() namer.NameSystems {
 // processed by the generators in this package.
 func DefaultNameSystem() string {
 	return "public"
-}
-
-// TODO wkpo comment?
-type shortNamer struct{}
-
-func (*shortNamer) Name(t *types.Type) string {
-	// TODO wkpo inline shortName here? and get rid of non-templated usages?
-	return shortName(t)
-}
-
-// TODO wkpo comment?
-type shortenVersionPackageNamer struct {
-	version *apiVersion
-}
-
-func (n *shortenVersionPackageNamer) Name(t *types.Type) string {
-	// TODO wkpo inline shortenPackagePath here? and get rid of non-templated usages?
-	return shortenPackagePath(t, n.version.Package)
 }
 
 func Packages(context *generator.Context, arguments *args.GeneratorArgs) (packages generator.Packages) {
