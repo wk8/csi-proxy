@@ -39,11 +39,10 @@ Register(grpcServer *grpc.Server)
 type ServerInterface interface {
 `, nil)
 
-	for pair := g.groupDefinition.serverCallbacks.Oldest(); pair != nil; pair = pair.Next() {
-		callbackName := pair.Key.(string)
-		callback := internal.ReplaceTypesPackage(pair.Value.(*types.Type), internal.PkgPlaceholder, "")
+	for _, namedCallback := range g.groupDefinition.serverCallbacks {
+		callback := internal.ReplaceTypesPackage(namedCallback.callback, internal.PkgPlaceholder, "")
 
-		snippetWriter.Do(callbackName+"(", nil)
+		snippetWriter.Do(namedCallback.name+"(", nil)
 		for _, param := range callback.Signature.Parameters {
 			snippetWriter.Do("$.Name.String$, ", param)
 		}

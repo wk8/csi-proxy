@@ -4,43 +4,81 @@ import (
 	"fmt"
 	"github.com/iancoleman/strcase"
 	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
-	"github.com/wk8/go-ordered-map"
 	"k8s.io/gengo/types"
 	"k8s.io/klog"
+	"sort"
 	"strings"
 )
 
 // TODO wkpo comment?
 type groupDefinition struct {
-	name          string
-	apiBasePkg    string
-	serverBasePkg string
-	clientBasePkg string
-	versions      []*apiVersion
-	// serverCallbacks maps callbacks to their definitions, with all the
-	// versioned types replaced with internal types.
-	// Using an ordered map allows deterministic generations.
-	serverCallbacks *orderedmap.OrderedMap
+	name            string
+	apiBasePkg      string
+	serverBasePkg   string
+	clientBasePkg   string
+	versions        []*apiVersion
+	serverCallbacks orderedCallbacks
 }
 
 // TODO wkpo comment?
 type apiVersion struct {
 	*types.Package
-	// topLevelTypes maps type names to their definitions
-	topLevelTypes *orderedmap.OrderedMap
-	// serverCallbacks maps callbacks to their definitions
-	// TODO wkpo used?
-	// TODO wkpo needs to be ordered?
-	serverCallbacks *orderedmap.OrderedMap
+	serverCallbacks orderedCallbacks
+}
+
+type namedCallback struct {
+	name     string
+	callback *types.Type
+}
+
+// orderedCallbacks is an alphabetically sorted list of named callbacks.
+// Sorting alphabetically allows the generation to be deterministic.
+// This implementation's performance is not perfect, but good enough given
+// that no group/version will ever have more than a few dozens callbacks at worst.
+type orderedCallbacks []namedCallback
+
+// getOrInsert either:
+// * if no callback with the same name already exists, inserts it and returns nil
+// * otherwise, simply returns the existing callback with the same name
+func (oc *orderedCallbacks) getOrInsert(callback namedCallback) *namedCallback {
+	existing, pos := oc.getWithPosition(callback.name)
+
+	if existing != nil {
+		// found, return the existing callback
+		return existing
+	}
+
+	// insert
+	*oc = append((*oc)[:pos], append([]namedCallback{callback}, (*oc)[pos:]...)...)
+	return nil
+}
+
+// get returns the named callback with the given name, if present.
+func (oc orderedCallbacks) get(name string) *namedCallback {
+	callback, _ := oc.getWithPosition(name)
+	return callback
+}
+
+// getWithPosition returns the named callback with the given name, if present, with
+// its position; otherwise returns the position at which it should be inserted.
+func (oc orderedCallbacks) getWithPosition(name string) (callback *namedCallback, pos int) {
+	pos = sort.Search(len(oc), func(i int) bool {
+		return oc[i].name >= name
+	})
+
+	if pos < len(oc) && oc[pos].name == name {
+		callback = &oc[pos]
+	}
+
+	return
 }
 
 func newGroupDefinition(name, apiBasePkg string) *groupDefinition {
 	return &groupDefinition{
-		name:            name,
-		apiBasePkg:      apiBasePkg,
-		serverBasePkg:   defaultServerBasePkg,
-		clientBasePkg:   defaultClientBasePkg,
-		serverCallbacks: orderedmap.New(),
+		name:          name,
+		apiBasePkg:    apiBasePkg,
+		serverBasePkg: defaultServerBasePkg,
+		clientBasePkg: defaultClientBasePkg,
 	}
 }
 
@@ -55,34 +93,35 @@ func (d *groupDefinition) addVersion(versionPkg *types.Package) {
 	}
 
 	version := &apiVersion{
-		Package:         versionPkg,
-		topLevelTypes:   orderedmap.New(),
-		serverCallbacks: orderedmap.New(),
+		Package: versionPkg,
 	}
 	d.versions = append(d.versions, version)
 
 	for callbackName, versionedCallback := range serverInterface.Methods {
 		d.validateServerCallback(callbackName, versionedCallback, version)
 
-		version.serverCallbacks.Set(callbackName, versionedCallback)
+		version.serverCallbacks.getOrInsert(namedCallback{
+			name:     callbackName,
+			callback: versionedCallback,
+		})
 
-		serverCallback := internal.ReplaceTypesPackage(versionedCallback, versionPkg.Path, internal.PkgPlaceholder)
+		namedServerCallback := namedCallback{
+			name:     callbackName,
+			callback: internal.ReplaceTypesPackage(versionedCallback, versionPkg.Path, internal.PkgPlaceholder),
+		}
 
-		if previousCallbackRaw, alreadyPresent := d.serverCallbacks.Get(callbackName); alreadyPresent {
-			previousCallback := previousCallbackRaw.(*types.Type)
-			if serverCallback.String() != previousCallback.String() {
+		if previousCallback := d.serverCallbacks.getOrInsert(namedServerCallback); previousCallback != nil {
+			if namedServerCallback.callback.String() != previousCallback.callback.String() {
 				errorMsg := fmt.Sprintf("Endpoint %s in API group %s inconsistent across versions:", callbackName, d.name)
 				for _, vsn := range d.versions {
-					if vsnCallback, present := vsn.serverCallbacks.Get(callbackName); present {
-						errorMsg += fmt.Sprintf("\n  - in version %s: %s", vsn.Name, vsnCallback.(*types.Type))
+					if vsnCallback := vsn.serverCallbacks.get(callbackName); vsnCallback != nil {
+						errorMsg += fmt.Sprintf("\n  - in version %s: %s", vsn.Name, vsnCallback.callback)
 					}
 				}
 				errorMsg += fmt.Sprintf("\nYields 2 different signatures for the internal server callback:\n%s\nand\n%s",
-					previousCallback, serverCallback)
+					previousCallback, namedServerCallback.callback)
 				klog.Fatalf(errorMsg)
 			}
-		} else {
-			d.serverCallbacks.Set(callbackName, serverCallback)
 		}
 	}
 }

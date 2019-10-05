@@ -51,9 +51,11 @@ func (g *typesGenerator) Init(context *generator.Context, writer io.Writer) erro
 			protoPkgPath, g.groupDefinition.name, g.version.Name)
 	}
 
+	// TODO wkpo make that a list, re-order first, alphabetically
 	for typeName, t := range protoPkg.Types {
 		// look at types that define a ProtoMessage method, these are the messages we need
 		// to have internal types corresponding to
+		// TODO wkpo make that a func, and check more (ie no return, no params, etc...)
 		if _, isMsg := t.Methods["ProtoMessage"]; isMsg {
 			g.generateStruct(typeName, t, snippetWriter)
 		}

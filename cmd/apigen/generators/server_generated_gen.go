@@ -69,11 +69,8 @@ func (s *versionedAPI) Register(grpcServer *grpc.Server) {
 	})
 
 	// write a request handler for each server callback
-	for pair := g.version.serverCallbacks.Oldest(); pair != nil; pair = pair.Next() {
-		callbackName := pair.Key.(string)
-		callback := pair.Value.(*types.Type)
-
-		g.writeWrapperFunction(callbackName, callback, snippetWriter)
+	for _, namedCallback := range g.version.serverCallbacks {
+		g.writeWrapperFunction(namedCallback.name, namedCallback.callback, snippetWriter)
 	}
 
 	return snippetWriter.Error()

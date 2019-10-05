@@ -2,6 +2,8 @@ module github.com/kubernetes-csi/csi-proxy
 
 go 1.12
 
+// TODO wkpo clean up imports! pas de logrus! pas de orderedmap?
+
 require (
 	github.com/Microsoft/go-winio v0.4.14
 	github.com/golang/protobuf v1.3.2

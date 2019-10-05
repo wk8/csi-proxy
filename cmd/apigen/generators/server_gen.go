@@ -35,11 +35,10 @@ func (g *serverGenerator) Init(context *generator.Context, writer io.Writer) err
 
 	snippetWriter.Do("type Server struct{}\n\n", nil)
 
-	for pair := g.groupDefinition.serverCallbacks.Oldest(); pair != nil; pair = pair.Next() {
-		callbackName := pair.Key.(string)
-		callback := internal.ReplaceTypesPackage(pair.Value.(*types.Type), internal.PkgPlaceholder, "internal")
+	for _, namedCallback := range g.groupDefinition.serverCallbacks {
+		callback := internal.ReplaceTypesPackage(namedCallback.callback, internal.PkgPlaceholder, "internal")
 
-		snippetWriter.Do("func (s *Server) "+callbackName+"(", nil)
+		snippetWriter.Do("func (s *Server) "+namedCallback.name+"(", nil)
 		for _, param := range callback.Signature.Parameters {
 			snippetWriter.Do("$.|short$ $.Name.String$, ", param)
 		}
