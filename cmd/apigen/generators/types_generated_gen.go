@@ -8,9 +8,7 @@ import (
 	"k8s.io/gengo/types"
 )
 
-// TODO wkpo comment!
-
-// TODO wkpo comment?
+// a typesGeneratedGenerator generates the types_generated.file - one per API group.
 type typesGeneratedGenerator struct {
 	generator.DefaultGen
 	groupDefinition *groupDefinition

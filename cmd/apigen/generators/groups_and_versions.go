@@ -10,19 +10,21 @@ import (
 	"strings"
 )
 
-// TODO wkpo comment?
+// a groupDefinition represents an API group definition.
 type groupDefinition struct {
-	name            string
-	apiBasePkg      string
-	serverBasePkg   string
-	clientBasePkg   string
-	versions        []*apiVersion
+	name          string
+	apiBasePkg    string
+	serverBasePkg string
+	clientBasePkg string
+	versions      []*apiVersion
+	// serverCallbacks are all the callbacks the internal server needs, across all versions.
 	serverCallbacks orderedCallbacks
 }
 
-// TODO wkpo comment?
+// an apiVersion represents a single version of a given API group.
 type apiVersion struct {
 	*types.Package
+	// serverCallbacks are the version's specific callbacks.
 	serverCallbacks orderedCallbacks
 }
 

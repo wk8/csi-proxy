@@ -13,7 +13,6 @@ import (
 )
 
 func main() {
-	// TODO wkpo mouaif
 	klog.InitFlags(nil)
 
 	if err := buildArgs().Execute(
@@ -24,7 +23,7 @@ func main() {
 		klog.Fatalf("Error: %v", err)
 	}
 
-	klog.Infof("wkpo bordel")
+	klog.Infof("Generation successful!")
 }
 
 func buildArgs() *args.GeneratorArgs {
@@ -47,9 +46,6 @@ func buildArgs() *args.GeneratorArgs {
 			genericArgs.InputDirs[i] = internal.CanonicalizePkgPath(inputDir) + "/..."
 		}
 	}
-
-	// TODO wkpo check que pas d'output, vu que bah...
-	// TODO wkpo check other args
 
 	return genericArgs
 }

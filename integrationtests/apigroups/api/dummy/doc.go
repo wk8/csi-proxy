@@ -1,8 +1,7 @@
 package dummy
 
 // The comment below indicates that this package defines a CSI-proxy API group
-// All comma-separated options are optional, and default respectively to:
-//  * groupName: current package name
-//  * serverBasePkg: github.com/kubernetes-csi/csi-proxy/internal/server
-//  * clientBasePkg: github.com/kubernetes-csi/csi-proxy/client/groups
-// +csi-proxy-gen=groupName:dummy,serverBasePkg:github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server,clientBasePkg:github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client
+// See comments in this repo's cmd/apigen/generators/api.go file for more context.
+// +csi-proxy-gen=groupName:dummy
+// +csi-proxy-gen=serverBasePkg:github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server
+// +csi-proxy-gen=clientBasePkg:github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client

@@ -6,13 +6,16 @@ import (
 	"k8s.io/gengo/types"
 )
 
-// TODO wkpo unit tests!
-
-// TODO wkpo comments?
 const (
+	// CSIProxyRootPath is the CSI-proxy go library's root path.
 	CSIProxyRootPath = "github.com/kubernetes-csi/csi-proxy"
-	CSIProxyAPIPath  = CSIProxyRootPath + "/client/api/"
+	// CSIProxyAPIPath is the default location for API group definitions.
+	CSIProxyAPIPath = CSIProxyRootPath + "/client/api/"
 
+	// PkgPlaceholder can be used as a placeholder for the package path, e.g.
+	// when deriving what callbacks an API group's internal server must have
+	// in order to be able to service all its versions.
+	// See also ReplaceTypesPackage.
 	PkgPlaceholder = "__PKG_PLACEHOLDER__"
 )
 
