@@ -17,7 +17,8 @@ import (
 
 func TestNewAPIGroup(t *testing.T) {
 	// TODO wkpo!
-	generators.Execute("TestNewAPIGroup", "--input-dirs", "github.com/kubernetes-csi/csi-proxy/integrationtests/csi-api-gen/new_group")
+	generators.Execute("TestNewAPIGroup",
+		"--input-dirs", "github.com/kubernetes-csi/csi-proxy/integrationtests/csi-api-gen/new_group")
 }
 
 func TestNewAPIVersion(t *testing.T) {
