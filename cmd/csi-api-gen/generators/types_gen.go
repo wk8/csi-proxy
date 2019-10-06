@@ -2,6 +2,7 @@ package generators
 
 import (
 	"io"
+	"sort"
 	"strings"
 
 	"k8s.io/gengo/generator"
@@ -24,10 +25,16 @@ type typesGenerator struct {
 	importTracker namer.ImportTracker
 }
 
+type namedType struct {
+	name string
+	*types.Type
+}
+
 func (g *typesGenerator) Namers(*generator.Context) namer.NameSystems {
 	g.importTracker = generator.NewImportTracker()
 
 	return namer.NameSystems{
+		// TODO wkpo on peut pas juste faire semblant que c le pkg version instead here?
 		"raw": namer.NewRawNamer(g.groupDefinition.internalServerPkg(), g.importTracker),
 	}
 }
@@ -51,17 +58,43 @@ func (g *typesGenerator) Init(context *generator.Context, writer io.Writer) erro
 			protoPkgPath, g.groupDefinition.name, g.version.Name)
 	}
 
-	// TODO wkpo make that a list, re-order first, alphabetically
-	for typeName, t := range protoPkg.Types {
-		// look at types that define a ProtoMessage method, these are the messages we need
-		// to have internal types corresponding to
-		// TODO wkpo make that a func, and check more (ie no return, no params, etc...)
-		if _, isMsg := t.Methods["ProtoMessage"]; isMsg {
-			g.generateStruct(typeName, t, snippetWriter)
+	protoMessages := make([]namedType, 0)
+
+	for name, t := range protoPkg.Types {
+		if isProtobufMessage(t) {
+			protoMessages = append(protoMessages, namedType{
+				name: name,
+				Type: t,
+			})
 		}
 	}
 
+	// re-order alphabetically to ensure deterministic builds
+	sort.Slice(protoMessages, func(i, j int) bool {
+		return protoMessages[i].name < protoMessages[j].name
+	})
+
+	for _, protoMessage := range protoMessages {
+		g.generateStruct(protoMessage.name, protoMessage.Type, snippetWriter)
+	}
+
 	return snippetWriter.Error()
+}
+
+// isProtobufMessage returns true iff t is a protobuf message; it determines that
+// by looking for a ProtoMessage method with no parameters and no results.
+func isProtobufMessage(t *types.Type) bool {
+	if t == nil || t.Methods == nil {
+		return false
+	}
+	protoMsgFunc, present := t.Methods["ProtoMessage"]
+	if !present || protoMsgFunc.Signature == nil {
+		return false
+	}
+
+	sig := protoMsgFunc.Signature
+
+	return len(sig.Parameters) == 0 && len(sig.Results) == 0 && !sig.Variadic
 }
 
 func (g *typesGenerator) generateStruct(typeName string, t *types.Type, snippetWriter *generator.SnippetWriter) {
@@ -80,8 +113,20 @@ func (g *typesGenerator) generateStruct(typeName string, t *types.Type, snippetW
 			}
 			snippetWriter.Do("// $.$\n", commentLine)
 		}
+		snippetWriter.Do("$.$ ", member.Name)
+
+		if isVersionedVariable(member.Type, g.version) {
+			// another message from the same API version
+			snippetWriter.Do("$.$", replaceTypesPackage(member.Type, g.version.Path, ""))
+		} else {
+			snippetWriter.Do("$.|raw$", member.Type)
+		}
+		snippetWriter.Do("\n", nil)
+
 		// TODO wkpo pas bon!! ca spitte out les subfields du proto au lieu des internal!
-		snippetWriter.Do(member.Name+" $.|raw$\n", member.Type)
+		//snippetWriter.Do(member.Name+" $.|raw$\n", member.Type)
+		//snippetWriter.Do(member.Name+" wkpo bordel $.$\n", member.Type)
+		//snippetWriter.Do(member.Name+" wkpo bordel $.|public$\n", member.Type)
 	}
 
 	snippetWriter.Do("}\n\n", nil)

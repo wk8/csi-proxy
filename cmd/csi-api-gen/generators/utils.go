@@ -1,6 +1,7 @@
 package generators
 
 import (
+	"k8s.io/klog"
 	"strings"
 
 	"k8s.io/gengo/types"
@@ -46,15 +47,29 @@ func replaceTypesPackageRec(t *types.Type, pkg, newPkg string, visited map[*type
 		Kind:                      t.Kind,
 		CommentLines:              t.CommentLines,
 		SecondClosestCommentLines: t.SecondClosestCommentLines,
-		Members:                   t.Members,
 	}
 	visited[t] = result
+
+	if len(t.Members) != 0 {
+		members := make([]types.Member, len(t.Members))
+		for i, member := range t.Members {
+			members[i] = types.Member{
+				Name:         member.Name,
+				Embedded:     member.Embedded,
+				CommentLines: member.CommentLines,
+				Tags:         member.Tags,
+				Type:         replaceTypesPackageRec(member.Type, pkg, newPkg, visited),
+			}
+			klog.Infof("wkpo bordel de merde on replace dans %s // %v => %v", member.Name, member.Type, members[i].Type)
+		}
+		result.Members = members
+	}
 
 	result.Elem = replaceTypesPackageRec(t.Elem, pkg, newPkg, visited)
 	result.Key = replaceTypesPackageRec(t.Key, pkg, newPkg, visited)
 	result.Underlying = replaceTypesPackageRec(t.Underlying, pkg, newPkg, visited)
 
-	if t.Methods != nil {
+	if len(t.Methods) != 0 {
 		methods := make(map[string]*types.Type)
 		for k, v := range t.Methods {
 			methods[k] = replaceTypesPackageRec(v, pkg, newPkg, visited)

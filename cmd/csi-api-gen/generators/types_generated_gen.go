@@ -41,6 +41,7 @@ type ServerInterface interface {
 
 		snippetWriter.Do(namedCallback.name+"(", nil)
 		for _, param := range callback.Signature.Parameters {
+			// TODO wkpo grep and replace by just $.$
 			snippetWriter.Do("$.Name.String$, ", param)
 		}
 		// add the version parameter
