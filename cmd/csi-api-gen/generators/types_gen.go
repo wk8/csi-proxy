@@ -80,6 +80,7 @@ func (g *typesGenerator) generateStruct(typeName string, t *types.Type, snippetW
 			}
 			snippetWriter.Do("// $.$\n", commentLine)
 		}
+		// TODO wkpo pas bon!! ca spitte out les subfields du proto au lieu des internal!
 		snippetWriter.Do(member.Name+" $.|raw$\n", member.Type)
 	}
 
