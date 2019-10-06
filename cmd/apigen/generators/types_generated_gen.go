@@ -1,14 +1,15 @@
 package generators
 
 import (
-	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
 	"io"
 
 	"k8s.io/gengo/generator"
 	"k8s.io/gengo/types"
+
+	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
 )
 
-// a typesGeneratedGenerator generates the types_generated.file - one per API group.
+// a typesGeneratedGenerator generates types_generated.go files - one per API group.
 type typesGeneratedGenerator struct {
 	generator.DefaultGen
 	groupDefinition *groupDefinition

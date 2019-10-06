@@ -2,12 +2,14 @@ package generators
 
 import (
 	"fmt"
-	"github.com/iancoleman/strcase"
-	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
-	"k8s.io/gengo/types"
-	"k8s.io/klog"
 	"sort"
 	"strings"
+
+	"github.com/iancoleman/strcase"
+	"k8s.io/gengo/types"
+	"k8s.io/klog"
+
+	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
 )
 
 // a groupDefinition represents an API group definition.

@@ -1,27 +1,26 @@
 package generators
 
-// TODO wkpo check all goddamn imports.....
 import (
-	"github.com/kubernetes-csi/csi-proxy/client/apiversion"
 	"io"
+	"sort"
+
 	"k8s.io/gengo/generator"
 	"k8s.io/gengo/types"
-	"sort"
+
+	"github.com/kubernetes-csi/csi-proxy/client/apiversion"
 )
 
-// TODO wkpo comment!
-
-// TODO wkpo comment?
-type apiGroupsGeneratedGenerator struct {
+// a apiGroupGeneratedGenerator generates api_group_generated.go files - one per API group.
+type apiGroupGeneratedGenerator struct {
 	generator.DefaultGen
 	groupDefinition *groupDefinition
 }
 
-func (g *apiGroupsGeneratedGenerator) Filter(*generator.Context, *types.Type) bool {
+func (g *apiGroupGeneratedGenerator) Filter(*generator.Context, *types.Type) bool {
 	return false
 }
 
-func (g *apiGroupsGeneratedGenerator) Imports(*generator.Context) []string {
+func (g *apiGroupGeneratedGenerator) Imports(*generator.Context) []string {
 	imports := []string{
 		"github.com/kubernetes-csi/csi-proxy/client/apiversion",
 		"github.com/kubernetes-csi/csi-proxy/internal/server",
@@ -35,7 +34,7 @@ func (g *apiGroupsGeneratedGenerator) Imports(*generator.Context) []string {
 	return imports
 }
 
-func (g *apiGroupsGeneratedGenerator) Init(context *generator.Context, writer io.Writer) error {
+func (g *apiGroupGeneratedGenerator) Init(context *generator.Context, writer io.Writer) error {
 	snippetWriter := generator.NewSnippetWriter(writer, context, "$", "$")
 
 	snippetWriter.Do(`const name = "$.$"`, g.groupDefinition.name)

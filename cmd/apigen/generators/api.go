@@ -146,7 +146,6 @@ func findAPIGroupDefinitions(context *generator.Context) map[string]*groupDefini
 
 // buildAPIGroupDefinitionFromDocComment looks for a +csi-proxy-gen comment in the package's
 // doc.go file, and if it finds one build the corresponding API definition.
-// TODO wkpo use types.ExtractCommentTags and the like?
 func buildAPIGroupDefinitionFromDocComment(pkgPath string, pkg *types.Package, groups map[string]*groupDefinition) bool {
 	commentTags := types.ExtractCommentTags(tagMarker, pkg.Comments)[tagName]
 
@@ -289,8 +288,6 @@ func removeGeneratedFiles(group *groupDefinition, outputBase string) {
 	}
 }
 
-// TODO wkpo move to EOF
-// TODO wkpo header , etc?
 func packages(group *groupDefinition, outputBase string) generator.Packages {
 	pkgs := generator.Packages{
 		&generator.DefaultPackage{
@@ -299,7 +296,7 @@ func packages(group *groupDefinition, outputBase string) generator.Packages {
 			HeaderText:  []byte(headerComment),
 
 			GeneratorFunc: func(context *generator.Context) (generators []generator.Generator) {
-				generators = append(generators, &apiGroupsGeneratedGenerator{
+				generators = append(generators, &apiGroupGeneratedGenerator{
 					DefaultGen: generator.DefaultGen{
 						OptionalName: "api_group_generated",
 					},
@@ -359,7 +356,6 @@ func packages(group *groupDefinition, outputBase string) generator.Packages {
 				HeaderText:  []byte(headerComment),
 
 				GeneratorFunc: func(context *generator.Context) []generator.Generator {
-					// TODO wkpo options on the conversion generator!!
 					conversionGenerator, err := conversiongenerator.NewConversionGenerator(context, "conversion_generated", vsn.Path,
 						group.versionedServerPkg(vsn.Name), []string{group.internalServerPkg()}, nil)
 					if err != nil {

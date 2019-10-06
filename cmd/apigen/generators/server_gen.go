@@ -1,17 +1,17 @@
 package generators
 
-// TODO wkpo check all goddamn imports.....
 import (
-	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
 	"io"
+	"strings"
+
 	"k8s.io/gengo/generator"
 	"k8s.io/gengo/types"
-	"strings"
+
+	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
 )
 
-// TODO wkpo comment!
-
-// TODO wkpo comment?
+// a serverGenerator generates server.go files - one per API group; only if it doesn't already exist.
+// This is simply meant to help bootstrapping new API groups.
 type serverGenerator struct {
 	generator.DefaultGen
 	groupDefinition *groupDefinition

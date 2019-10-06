@@ -1,20 +1,20 @@
 package generators
 
-// TODO wkpo check all goddamn imports.....
 import (
 	"io"
+	"strings"
+
 	"k8s.io/gengo/generator"
 	"k8s.io/gengo/namer"
 	"k8s.io/gengo/types"
 	"k8s.io/klog"
-	"strings"
 )
-
-// TODO wkpo comment!
 
 // TODO wkpo have a complicated thing in the test, with structs referencing one another
 
-// TODO wkpo comment?
+// a typesGenerator generates types.go files - one per API group; only if it doesn't already exist,
+// and the API group only has one version.
+// This is simply meant to help bootstrapping new API groups.
 type typesGenerator struct {
 	generator.DefaultGen
 

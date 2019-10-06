@@ -1,18 +1,16 @@
 package generators
 
-// TODO wkpo check all goddamn imports.....
 import (
-	"github.com/iancoleman/strcase"
 	"io"
+	"strings"
+
+	"github.com/iancoleman/strcase"
 	"k8s.io/gengo/generator"
 	"k8s.io/gengo/namer"
 	"k8s.io/gengo/types"
-	"strings"
 )
 
-// TODO wkpo comment!
-
-// TODO wkpo comment?
+// a serverGeneratedGenerator generates server_generated.go files - one per API version.
 type serverGeneratedGenerator struct {
 	generator.DefaultGen
 	groupDefinition *groupDefinition

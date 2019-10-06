@@ -1,9 +1,10 @@
 package generators
 
 import (
+	"strings"
+
 	"github.com/iancoleman/strcase"
 	"k8s.io/gengo/types"
-	"strings"
 )
 
 // a removePackageNamer removes the package from a type's name; e.g.
