@@ -18,8 +18,6 @@ import (
 	"github.com/kubernetes-csi/csi-proxy/client/apiversion"
 )
 
-// TODO wkpo remove logrus from go.mod/sum...?
-// TODO wkpo logrus => klog!
 // TODO wkpo check bootstrap, even better write a test on it
 
 /*
