@@ -48,14 +48,14 @@ const groupName = "$.groupName$"
 
 var version = apiversion.NewVersionOrPanic("$.version$")
 
-type wrapper struct {
+type Client struct {
 	client     $.version$.$.camelGroupName$Client
 	connection *grpc.ClientConn
 }
 
 // NewClient returns a client to make calls to the $.groupName$ API group version $.version$.
 // It's the caller's responsibility to Close the client when done.
-func NewClient() (*wrapper, error) {
+func NewClient() (*Client, error) {
 	pipePath := client.PipePath(groupName, version)
 
 	connection, err := grpc.Dial(pipePath,
@@ -68,19 +68,19 @@ func NewClient() (*wrapper, error) {
 	}
 
 	client := $.version$.New$.camelGroupName$Client(connection)
-	return &wrapper{
+	return &Client{
 		client:     client,
 		connection: connection,
 	}, nil
 }
 
 // Close closes the client. It must be called before the client gets GC-ed.
-func (w *wrapper) Close() error {
+func (w *Client) Close() error {
 	return w.connection.Close()
 }
 
 // ensures we implement all the required methods
-var _ $.version$.$.camelGroupName$Client = &wrapper{}
+var _ $.version$.$.camelGroupName$Client = &Client{}
 
 	`, map[string]string{
 		"camelGroupName": strcase.ToCamel(g.groupDefinition.name),
@@ -96,7 +96,7 @@ var _ $.version$.$.camelGroupName$Client = &wrapper{}
 }
 
 func (g *clientGeneratedGenerator) writeWrapperFunction(callbackName string, callback *types.Type, snippetWriter *generator.SnippetWriter) {
-	snippetWriter.Do("func (w *wrapper) $.$(", callbackName)
+	snippetWriter.Do("func (w *Client) $.$(", callbackName)
 
 	for _, param := range callback.Signature.Parameters {
 		snippetWriter.Do("$.|short$ $.|shortenVersionPackage$, ", param)

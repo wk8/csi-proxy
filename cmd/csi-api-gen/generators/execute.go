@@ -11,8 +11,8 @@ import (
 
 // Execute runs csi-api-gen. It's exposed as a public function
 // to be able to easily run it from integration tests.
-func Execute(flagSetName string, cliArgs ...string) {
-	if err := buildArgs(flagSetName, cliArgs).Execute(
+func Execute(executableName string, cliArgs ...string) {
+	if err := buildArgs(executableName, cliArgs).Execute(
 		nameSystems(),
 		defaultNameSystem(),
 		packages,
@@ -23,13 +23,13 @@ func Execute(flagSetName string, cliArgs ...string) {
 	klog.Infof("Generation successful!")
 }
 
-func buildArgs(flagSetName string, cliArgs []string) *args.GeneratorArgs {
-	goFlagSet := goflag.NewFlagSet(flagSetName, goflag.ExitOnError)
+func buildArgs(executableName string, cliArgs []string) *args.GeneratorArgs {
+	goFlagSet := goflag.NewFlagSet(executableName, goflag.ExitOnError)
 	klog.InitFlags(goFlagSet)
 
 	genericArgs := args.Default().WithoutDefaultFlagParsing()
 
-	pflagFlagSet := pflag.NewFlagSet(flagSetName, pflag.ExitOnError)
+	pflagFlagSet := pflag.NewFlagSet(executableName, pflag.ExitOnError)
 	genericArgs.AddFlags(pflagFlagSet)
 	pflagFlagSet.AddGoFlagSet(goFlagSet)
 	pflagFlagSet.Parse(cliArgs)
