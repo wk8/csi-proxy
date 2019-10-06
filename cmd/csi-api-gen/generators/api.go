@@ -102,14 +102,9 @@ func packages(context *generator.Context, arguments *args.GeneratorArgs) (pkgs g
 // and builds a map mapping API group paths to their definition.
 // API group definitions are either:
 // * subdirectories of client/api
-// * or packages whose doc.go file contains a comment containing markerComment
-// If the latter, the comment can also contain optional comma-separated options:
-//  * groupName: defaults to package name
-//  * serverBasePkg: defaults to defaultServerBasePkg
-//  * clientBasePkg: defaults to defaultClientBasePkg
-// for example,
-// +csi-proxy-gen=groupName:dummy,serverBasePkg:github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/server,clientBasePkg:github.com/kubernetes-csi/csi-proxy/integrationtests/apigroups/client
-func findAPIGroupDefinitions(context *generator.Context) map[string]*groupDefinition {
+// * or packages whose doc.go file contains a comment containing relevant tag markers
+// If the latter, see the comments on tagMarker and tagName above for supported options.
+func findAPIGroupDefinitions(context *generator.Context) []*groupDefinition {
 	pkgPaths := context.Inputs
 
 	// first, re-order the inputs by lengths, so that we always process parent packages first
@@ -152,7 +147,18 @@ func findAPIGroupDefinitions(context *generator.Context) map[string]*groupDefini
 		}
 	}
 
-	return groups
+	result := make([]*groupDefinition, len(groups))
+	i := 0
+	for _, group := range groups {
+		// sanity check: every group should have at least one version
+		if len(group.versions) == 0 {
+			klog.Fatalf("API group %q doesn't have any version", group.name)
+		}
+		result[i] = group
+		i++
+	}
+
+	return result
 }
 
 // buildAPIGroupDefinitionFromDocComment looks for a +csi-proxy-gen comment in the package's
