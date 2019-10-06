@@ -20,6 +20,8 @@ import (
 
 // TODO wkpo check bootstrap, even better write a test on it
 
+// TODO wkpo update api/README.md
+
 /*
 This file defines a gengo generator to generate all the boilerplate code API
 groups and versions need.

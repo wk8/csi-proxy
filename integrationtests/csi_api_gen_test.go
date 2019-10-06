@@ -1,13 +1,13 @@
 package integrationtests
 
 import (
-	"os"
 	"testing"
 
 	"github.com/kubernetes-csi/csi-proxy/cmd/csi-api-gen/generators"
 )
 
 // TODO wkpo capture output for all of em!
+// TODO wkpo capture panics, too...!
 
 // This tests API generator; more specifically, its main goal is to ensure
 // that the API generator works as expected when creating a new API group,
@@ -17,10 +17,10 @@ import (
 
 func TestNewAPIGroup(t *testing.T) {
 	// TODO wkpo!
-	generators.Execute("TestNewAPIGroup")
+	generators.Execute("TestNewAPIGroup", "--input-dirs", "github.com/kubernetes-csi/csi-proxy/integrationtests/csi-api-gen/new_group")
 }
 
-func TestNewAPIGroup(t *testing.T) {
+func TestNewAPIVersion(t *testing.T) {
 	// TODO wkpo
 }
 
