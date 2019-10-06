@@ -38,12 +38,12 @@ func (g *serverGenerator) Init(context *generator.Context, writer io.Writer) err
 
 		snippetWriter.Do("func (s *Server) "+namedCallback.name+"(", nil)
 		for _, param := range callback.Signature.Parameters {
-			snippetWriter.Do("$.|short$ $.Name.String$, ", param)
+			snippetWriter.Do("$.|short$ $.$, ", param)
 		}
 		// add the version parameter
 		snippetWriter.Do("version apiversion.Version) (", nil)
 		for _, returnValue := range callback.Signature.Results {
-			snippetWriter.Do("$.Name.String$, ", returnValue)
+			snippetWriter.Do("$.$, ", returnValue)
 		}
 
 		snippetWriter.Do(") {\n// TODO: auto-generated stub\n", nil)

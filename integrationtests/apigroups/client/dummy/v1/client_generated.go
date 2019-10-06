@@ -17,14 +17,14 @@ const groupName = "dummy"
 
 var version = apiversion.NewVersionOrPanic("v1")
 
-type wrapper struct {
+type Client struct {
 	client     v1.DummyClient
 	connection *grpc.ClientConn
 }
 
 // NewClient returns a client to make calls to the dummy API group version v1.
 // It's the caller's responsibility to Close the client when done.
-func NewClient() (*wrapper, error) {
+func NewClient() (*Client, error) {
 	pipePath := client.PipePath(groupName, version)
 
 	connection, err := grpc.Dial(pipePath,
@@ -37,24 +37,24 @@ func NewClient() (*wrapper, error) {
 	}
 
 	client := v1.NewDummyClient(connection)
-	return &wrapper{
+	return &Client{
 		client:     client,
 		connection: connection,
 	}, nil
 }
 
 // Close closes the client. It must be called before the client gets GC-ed.
-func (w *wrapper) Close() error {
+func (w *Client) Close() error {
 	return w.connection.Close()
 }
 
 // ensures we implement all the required methods
-var _ v1.DummyClient = &wrapper{}
+var _ v1.DummyClient = &Client{}
 
-func (w *wrapper) ComputeDouble(context context.Context, request *v1.ComputeDoubleRequest, opts ...grpc.CallOption) (*v1.ComputeDoubleResponse, error) {
+func (w *Client) ComputeDouble(context context.Context, request *v1.ComputeDoubleRequest, opts ...grpc.CallOption) (*v1.ComputeDoubleResponse, error) {
 	return w.client.ComputeDouble(context, request, opts...)
 }
 
-func (w *wrapper) TellMeAPoem(context context.Context, request *v1.TellMeAPoemRequest, opts ...grpc.CallOption) (*v1.TellMeAPoemResponse, error) {
+func (w *Client) TellMeAPoem(context context.Context, request *v1.TellMeAPoemRequest, opts ...grpc.CallOption) (*v1.TellMeAPoemResponse, error) {
 	return w.client.TellMeAPoem(context, request, opts...)
 }

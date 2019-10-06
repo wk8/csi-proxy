@@ -41,13 +41,12 @@ type ServerInterface interface {
 
 		snippetWriter.Do(namedCallback.name+"(", nil)
 		for _, param := range callback.Signature.Parameters {
-			// TODO wkpo grep and replace by just $.$
-			snippetWriter.Do("$.Name.String$, ", param)
+			snippetWriter.Do("$.$, ", param)
 		}
 		// add the version parameter
 		snippetWriter.Do("apiversion.Version) (", nil)
 		for _, returnValue := range callback.Signature.Results {
-			snippetWriter.Do("$.Name.String$, ", returnValue)
+			snippetWriter.Do("$.$, ", returnValue)
 		}
 		snippetWriter.Do(")\n", nil)
 	}

@@ -11,8 +11,6 @@ import (
 	"k8s.io/klog"
 )
 
-// TODO wkpo have a complicated thing in the test, with structs referencing one another
-
 // a typesGenerator generates types.go files - one per API group; only if it doesn't already exist,
 // and the API group only has one version.
 // This is simply meant to help bootstrapping new API groups.
@@ -34,8 +32,7 @@ func (g *typesGenerator) Namers(*generator.Context) namer.NameSystems {
 	g.importTracker = generator.NewImportTracker()
 
 	return namer.NameSystems{
-		// TODO wkpo on peut pas juste faire semblant que c le pkg version instead here?
-		"raw": namer.NewRawNamer(g.groupDefinition.internalServerPkg(), g.importTracker),
+		"raw": namer.NewRawNamer(g.version.Path, g.importTracker),
 	}
 }
 
@@ -113,20 +110,7 @@ func (g *typesGenerator) generateStruct(typeName string, t *types.Type, snippetW
 			}
 			snippetWriter.Do("// $.$\n", commentLine)
 		}
-		snippetWriter.Do("$.$ ", member.Name)
-
-		if isVersionedVariable(member.Type, g.version) {
-			// another message from the same API version
-			snippetWriter.Do("$.$", replaceTypesPackage(member.Type, g.version.Path, ""))
-		} else {
-			snippetWriter.Do("$.|raw$", member.Type)
-		}
-		snippetWriter.Do("\n", nil)
-
-		// TODO wkpo pas bon!! ca spitte out les subfields du proto au lieu des internal!
-		//snippetWriter.Do(member.Name+" $.|raw$\n", member.Type)
-		//snippetWriter.Do(member.Name+" wkpo bordel $.$\n", member.Type)
-		//snippetWriter.Do(member.Name+" wkpo bordel $.|public$\n", member.Type)
+		snippetWriter.Do(member.Name+" $.|raw$\n", member.Type)
 	}
 
 	snippetWriter.Do("}\n\n", nil)

@@ -1,7 +1,6 @@
 package generators
 
 import (
-	"k8s.io/klog"
 	"strings"
 
 	"k8s.io/gengo/types"
@@ -60,7 +59,6 @@ func replaceTypesPackageRec(t *types.Type, pkg, newPkg string, visited map[*type
 				Tags:         member.Tags,
 				Type:         replaceTypesPackageRec(member.Type, pkg, newPkg, visited),
 			}
-			klog.Infof("wkpo bordel de merde on replace dans %s // %v => %v", member.Name, member.Type, members[i].Type)
 		}
 		result.Members = members
 	}

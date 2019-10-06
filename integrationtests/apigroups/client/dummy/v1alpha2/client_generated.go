@@ -17,14 +17,14 @@ const groupName = "dummy"
 
 var version = apiversion.NewVersionOrPanic("v1alpha2")
 
-type wrapper struct {
+type Client struct {
 	client     v1alpha2.DummyClient
 	connection *grpc.ClientConn
 }
 
 // NewClient returns a client to make calls to the dummy API group version v1alpha2.
 // It's the caller's responsibility to Close the client when done.
-func NewClient() (*wrapper, error) {
+func NewClient() (*Client, error) {
 	pipePath := client.PipePath(groupName, version)
 
 	connection, err := grpc.Dial(pipePath,
@@ -37,20 +37,20 @@ func NewClient() (*wrapper, error) {
 	}
 
 	client := v1alpha2.NewDummyClient(connection)
-	return &wrapper{
+	return &Client{
 		client:     client,
 		connection: connection,
 	}, nil
 }
 
 // Close closes the client. It must be called before the client gets GC-ed.
-func (w *wrapper) Close() error {
+func (w *Client) Close() error {
 	return w.connection.Close()
 }
 
 // ensures we implement all the required methods
-var _ v1alpha2.DummyClient = &wrapper{}
+var _ v1alpha2.DummyClient = &Client{}
 
-func (w *wrapper) ComputeDouble(context context.Context, request *v1alpha2.ComputeDoubleRequest, opts ...grpc.CallOption) (*v1alpha2.ComputeDoubleResponse, error) {
+func (w *Client) ComputeDouble(context context.Context, request *v1alpha2.ComputeDoubleRequest, opts ...grpc.CallOption) (*v1alpha2.ComputeDoubleResponse, error) {
 	return w.client.ComputeDouble(context, request, opts...)
 }
