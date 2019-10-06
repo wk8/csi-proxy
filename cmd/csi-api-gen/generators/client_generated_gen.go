@@ -74,6 +74,11 @@ func NewClient() (*wrapper, error) {
 	}, nil
 }
 
+// Close closes the client. It must be called before the client gets GC-ed.
+func (w *wrapper) Close() error {
+	return w.connection.Close()
+}
+
 // ensures we implement all the required methods
 var _ $.version$.$.camelGroupName$Client = &wrapper{}
 
