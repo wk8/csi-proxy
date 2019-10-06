@@ -1,4 +1,4 @@
-package internal
+package generators
 
 import (
 	"strings"
@@ -6,34 +6,21 @@ import (
 	"k8s.io/gengo/types"
 )
 
-const (
-	// CSIProxyRootPath is the CSI-proxy go library's root path.
-	CSIProxyRootPath = "github.com/kubernetes-csi/csi-proxy"
-	// CSIProxyAPIPath is the default location for API group definitions.
-	CSIProxyAPIPath = CSIProxyRootPath + "/client/api/"
-
-	// PkgPlaceholder can be used as a placeholder for the package path, e.g.
-	// when deriving what callbacks an API group's internal server must have
-	// in order to be able to service all its versions.
-	// See also ReplaceTypesPackage.
-	PkgPlaceholder = "__PKG_PLACEHOLDER__"
-)
-
-// CanonicalizePkgPath ensures package paths are consistent.
-func CanonicalizePkgPath(pkgPath string) string {
+// canonicalizePkgPath ensures package paths are consistent.
+func canonicalizePkgPath(pkgPath string) string {
 	return strings.TrimSuffix(pkgPath, "/")
 }
 
-// ToPackageName turns a snake case string into a go package name.
-func SnakeCaseToPackageName(name string) string {
+// snakeCaseToPackageName turns a snake case string into a go package name.
+func snakeCaseToPackageName(name string) string {
 	return strings.ReplaceAll(name, "_", "")
 }
 
-// ReplaceTypesPackage return a new type, equal to t except moved from package
+// replaceTypesPackage return a new type, equal to t except moved from package
 // pkg to package newPkg (and same for other types referenced by t).
 // t itself remains unchanged.
-func ReplaceTypesPackage(t *types.Type, pkg, newPkg string) *types.Type {
-	return replaceTypesPackage(t, normalizePkg(pkg), normalizePkg(newPkg), make(map[*types.Type]*types.Type))
+func replaceTypesPackage(t *types.Type, pkg, newPkg string) *types.Type {
+	return replaceTypesPackageRec(t, normalizePkg(pkg), normalizePkg(newPkg), make(map[*types.Type]*types.Type))
 }
 
 func normalizePkg(pkg string) string {
@@ -43,7 +30,7 @@ func normalizePkg(pkg string) string {
 	return pkg
 }
 
-func replaceTypesPackage(t *types.Type, pkg, newPkg string, visited map[*types.Type]*types.Type) *types.Type {
+func replaceTypesPackageRec(t *types.Type, pkg, newPkg string, visited map[*types.Type]*types.Type) *types.Type {
 	if t == nil {
 		return nil
 	}
@@ -63,14 +50,14 @@ func replaceTypesPackage(t *types.Type, pkg, newPkg string, visited map[*types.T
 	}
 	visited[t] = result
 
-	result.Elem = replaceTypesPackage(t.Elem, pkg, newPkg, visited)
-	result.Key = replaceTypesPackage(t.Key, pkg, newPkg, visited)
-	result.Underlying = replaceTypesPackage(t.Underlying, pkg, newPkg, visited)
+	result.Elem = replaceTypesPackageRec(t.Elem, pkg, newPkg, visited)
+	result.Key = replaceTypesPackageRec(t.Key, pkg, newPkg, visited)
+	result.Underlying = replaceTypesPackageRec(t.Underlying, pkg, newPkg, visited)
 
 	if t.Methods != nil {
 		methods := make(map[string]*types.Type)
 		for k, v := range t.Methods {
-			methods[k] = replaceTypesPackage(v, pkg, newPkg, visited)
+			methods[k] = replaceTypesPackageRec(v, pkg, newPkg, visited)
 		}
 		result.Methods = methods
 	}
@@ -78,7 +65,7 @@ func replaceTypesPackage(t *types.Type, pkg, newPkg string, visited map[*types.T
 	var signature *types.Signature
 	if t.Signature != nil {
 		signature = &types.Signature{
-			Receiver:     replaceTypesPackage(t.Signature.Receiver, pkg, newPkg, visited),
+			Receiver:     replaceTypesPackageRec(t.Signature.Receiver, pkg, newPkg, visited),
 			Parameters:   replaceTypesSlicePackage(t.Signature.Parameters, pkg, newPkg, visited),
 			Results:      replaceTypesSlicePackage(t.Signature.Results, pkg, newPkg, visited),
 			Variadic:     t.Signature.Variadic,
@@ -93,7 +80,13 @@ func replaceTypesPackage(t *types.Type, pkg, newPkg string, visited map[*types.T
 func replaceTypesSlicePackage(ts []*types.Type, pkg, newPkg string, visited map[*types.Type]*types.Type) []*types.Type {
 	result := make([]*types.Type, len(ts))
 	for i, t := range ts {
-		result[i] = replaceTypesPackage(t, pkg, newPkg, visited)
+		result[i] = replaceTypesPackageRec(t, pkg, newPkg, visited)
 	}
 	return result
+}
+
+// isInternalProtobufField returns true iff the given member is internal
+// to protobuf, and can be safely ignored by any other piece of code.
+func isInternalProtobufField(member *types.Member) bool {
+	return strings.HasPrefix(member.Name, "XXX_")
 }

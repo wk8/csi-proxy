@@ -3,11 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/kubernetes-csi/csi-proxy/cmd/csi-api-gen/execute"
+	"github.com/kubernetes-csi/csi-proxy/cmd/csi-api-gen/generators"
 )
 
 func main() {
-	execute.Execute(os.Args[1:])
-	// TODO wkpo should succeed, then remove!
-	execute.Execute(os.Args[1:])
+	generators.Execute(os.Args[0], os.Args[1:]...)
 }

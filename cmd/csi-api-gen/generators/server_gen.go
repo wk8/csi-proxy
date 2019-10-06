@@ -6,8 +6,6 @@ import (
 
 	"k8s.io/gengo/generator"
 	"k8s.io/gengo/types"
-
-	"github.com/kubernetes-csi/csi-proxy/cmd/csi-api-gen/internal"
 )
 
 // a serverGenerator generates server.go files - one per API group; only if it doesn't already exist.
@@ -36,7 +34,7 @@ func (g *serverGenerator) Init(context *generator.Context, writer io.Writer) err
 	snippetWriter.Do("type Server struct{}\n\n", nil)
 
 	for _, namedCallback := range g.groupDefinition.serverCallbacks {
-		callback := internal.ReplaceTypesPackage(namedCallback.callback, internal.PkgPlaceholder, "internal")
+		callback := replaceTypesPackage(namedCallback.callback, pkgPlaceholder, "internal")
 
 		snippetWriter.Do("func (s *Server) "+namedCallback.name+"(", nil)
 		for _, param := range callback.Signature.Parameters {

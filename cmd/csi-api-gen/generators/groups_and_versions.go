@@ -8,8 +8,6 @@ import (
 	"github.com/iancoleman/strcase"
 	"k8s.io/gengo/types"
 	"k8s.io/klog"
-
-	"github.com/kubernetes-csi/csi-proxy/cmd/csi-api-gen/internal"
 )
 
 // a groupDefinition represents an API group definition.
@@ -111,7 +109,7 @@ func (d *groupDefinition) addVersion(versionPkg *types.Package) {
 
 		namedServerCallback := namedCallback{
 			name:     callbackName,
-			callback: internal.ReplaceTypesPackage(versionedCallback, versionPkg.Path, internal.PkgPlaceholder),
+			callback: replaceTypesPackage(versionedCallback, versionPkg.Path, pkgPlaceholder),
 		}
 
 		if previousCallback := d.serverCallbacks.getOrInsert(namedServerCallback); previousCallback != nil {

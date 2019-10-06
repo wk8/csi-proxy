@@ -68,7 +68,7 @@ func (g *typesGenerator) generateStruct(typeName string, t *types.Type, snippetW
 	snippetWriter.Do("type "+typeName+" struct {\n", nil)
 
 	for _, member := range t.Members {
-		if strings.HasPrefix(member.Name, "XXX_") {
+		if isInternalProtobufField(&member) {
 			// internal protobuf field
 			continue
 		}
