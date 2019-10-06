@@ -6,7 +6,7 @@ import (
 	"k8s.io/gengo/generator"
 	"k8s.io/gengo/types"
 
-	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
+	"github.com/kubernetes-csi/csi-proxy/cmd/csi-api-gen/internal"
 )
 
 // a typesGeneratedGenerator generates types_generated.go files - one per API group.

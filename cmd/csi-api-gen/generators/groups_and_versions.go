@@ -9,7 +9,7 @@ import (
 	"k8s.io/gengo/types"
 	"k8s.io/klog"
 
-	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
+	"github.com/kubernetes-csi/csi-proxy/cmd/csi-api-gen/internal"
 )
 
 // a groupDefinition represents an API group definition.

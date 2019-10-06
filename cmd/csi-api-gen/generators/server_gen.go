@@ -7,7 +7,7 @@ import (
 	"k8s.io/gengo/generator"
 	"k8s.io/gengo/types"
 
-	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
+	"github.com/kubernetes-csi/csi-proxy/cmd/csi-api-gen/internal"
 )
 
 // a serverGenerator generates server.go files - one per API group; only if it doesn't already exist.

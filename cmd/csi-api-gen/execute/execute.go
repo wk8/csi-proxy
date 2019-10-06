@@ -1,4 +1,4 @@
-package main
+package execute
 
 import (
 	"strings"
@@ -8,14 +8,16 @@ import (
 	"k8s.io/gengo/args"
 	"k8s.io/klog"
 
-	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/generators"
-	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
+	"github.com/kubernetes-csi/csi-proxy/cmd/csi-api-gen/generators"
+	"github.com/kubernetes-csi/csi-proxy/cmd/csi-api-gen/internal"
 )
 
-func main() {
+// Execute runs csi-api-gen. It's exposed as a public function in a separate package
+// to be able to run it from integration tests.
+func Execute(cliArgs []string) {
 	klog.InitFlags(nil)
 
-	if err := buildArgs().Execute(
+	if err := buildArgs(cliArgs).Execute(
 		generators.NameSystems(),
 		generators.DefaultNameSystem(),
 		generators.Packages,
@@ -26,12 +28,12 @@ func main() {
 	klog.Infof("Generation successful!")
 }
 
-func buildArgs() *args.GeneratorArgs {
+func buildArgs(cliArgs []string) *args.GeneratorArgs {
 	genericArgs := args.Default().WithoutDefaultFlagParsing()
 
 	genericArgs.AddFlags(pflag.CommandLine)
 	pflag.CommandLine.AddGoFlagSet(goflag.CommandLine)
-	pflag.Parse()
+	pflag.CommandLine.Parse(cliArgs)
 
 	// if no package argument, default to processing canonical API groups, under CSIProxyAPIPath
 	if len(genericArgs.InputDirs) == 0 {

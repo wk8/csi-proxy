@@ -21,7 +21,7 @@ import (
 	"k8s.io/klog"
 
 	"github.com/kubernetes-csi/csi-proxy/client/apiversion"
-	"github.com/kubernetes-csi/csi-proxy/cmd/apigen/internal"
+	"github.com/kubernetes-csi/csi-proxy/cmd/csi-api-gen/internal"
 )
 
 // TODO wkpo save a SHA of source files, and don't regenerate if not needed? possible?
