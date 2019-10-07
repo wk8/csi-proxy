@@ -1,6 +1,7 @@
 package integrationtests
 
 import (
+	"k8s.io/gengo/args"
 	"testing"
 
 	"github.com/kubernetes-csi/csi-proxy/cmd/csi-api-gen/generators"
@@ -18,7 +19,13 @@ import (
 func TestNewAPIGroup(t *testing.T) {
 	// TODO wkpo!
 	generators.Execute("TestNewAPIGroup",
-		"--input-dirs", "github.com/kubernetes-csi/csi-proxy/integrationtests/csiapigen/new_group/api")
+		"--input-dirs", "github.com/kubernetes-csi/csi-proxy/integrationtests/csiapigen/new_group/api",
+		"--output-base", `C:\go\src\`)
+	// TODO wkpo next, regarder
+	args.DefaultSourceTree()
+	// et setter accordingly (peut etre avec reflect??)
+
+	// TOOD wkpo check qu'on peut compiler?
 }
 
 func TestNewAPIVersion(t *testing.T) {

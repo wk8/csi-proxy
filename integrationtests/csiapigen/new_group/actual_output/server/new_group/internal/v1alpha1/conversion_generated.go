@@ -13,7 +13,7 @@ func autoConvert_v1alpha1_FooRequest_To_internal_FooRequest(in *v1alpha1.FooRequ
 	if in.SubMessage != nil {
 		in, out := &in.SubMessage, &out.SubMessage
 		*out = new(internal.FooRequestSubMessage)
-		if err := Convert_v1alpha1_FooRequestSubMessage_To_internal_FooRequestSubMessage(*in, *out, s); err != nil {
+		if err := Convert_v1alpha1_FooRequestSubMessage_To_internal_FooRequestSubMessage(*in, *out); err != nil {
 			return err
 		}
 	} else {
@@ -32,7 +32,7 @@ func autoConvert_internal_FooRequest_To_v1alpha1_FooRequest(in *internal.FooRequ
 	if in.SubMessage != nil {
 		in, out := &in.SubMessage, &out.SubMessage
 		*out = new(v1alpha1.FooRequestSubMessage)
-		if err := Convert_internal_FooRequestSubMessage_To_v1alpha1_FooRequestSubMessage(*in, *out, s); err != nil {
+		if err := Convert_internal_FooRequestSubMessage_To_v1alpha1_FooRequestSubMessage(*in, *out); err != nil {
 			return err
 		}
 	} else {
@@ -53,6 +53,9 @@ func autoConvert_v1alpha1_FooRequestSubMessage_To_internal_FooRequestSubMessage(
 		in, out := &in.SubSubMessage, &out.SubSubMessage
 		*out = make([]*internal.FooRequestSubSubMessage, len(*in))
 		for i := range *in {
+			if err := Convert_v1alpha1_FooRequestSubSubMessage_To_internal_FooRequestSubSubMessage(*&(*in)[i], *&(*out)[i]); err != nil {
+				return err
+			}
 		}
 	} else {
 		out.SubSubMessage = nil
@@ -71,6 +74,9 @@ func autoConvert_internal_FooRequestSubMessage_To_v1alpha1_FooRequestSubMessage(
 		in, out := &in.SubSubMessage, &out.SubSubMessage
 		*out = make([]*v1alpha1.FooRequestSubSubMessage, len(*in))
 		for i := range *in {
+			if err := Convert_internal_FooRequestSubSubMessage_To_v1alpha1_FooRequestSubSubMessage(*&(*in)[i], *&(*out)[i]); err != nil {
+				return err
+			}
 		}
 	} else {
 		out.SubSubMessage = nil
@@ -108,7 +114,7 @@ func autoConvert_v1alpha1_FooResponse_To_internal_FooResponse(in *v1alpha1.FooRe
 	if in.SubMessage != nil {
 		in, out := &in.SubMessage, &out.SubMessage
 		*out = new(internal.FooRequestSubMessage)
-		if err := Convert_v1alpha1_FooRequestSubMessage_To_internal_FooRequestSubMessage(*in, *out, s); err != nil {
+		if err := Convert_v1alpha1_FooRequestSubMessage_To_internal_FooRequestSubMessage(*in, *out); err != nil {
 			return err
 		}
 	} else {
@@ -127,7 +133,7 @@ func autoConvert_internal_FooResponse_To_v1alpha1_FooResponse(in *internal.FooRe
 	if in.SubMessage != nil {
 		in, out := &in.SubMessage, &out.SubMessage
 		*out = new(v1alpha1.FooRequestSubMessage)
-		if err := Convert_internal_FooRequestSubMessage_To_v1alpha1_FooRequestSubMessage(*in, *out, s); err != nil {
+		if err := Convert_internal_FooRequestSubMessage_To_v1alpha1_FooRequestSubMessage(*in, *out); err != nil {
 			return err
 		}
 	} else {

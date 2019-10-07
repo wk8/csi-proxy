@@ -358,10 +358,25 @@ func packagesForGroup(group *groupDefinition, outputBase string) generator.Packa
 					if err != nil {
 						klog.Fatalf("unable to create conversion generator: %v", err)
 					}
-					conversionGenerator.WithMissingFieldsHandler(func(inVar, outVar conversiongenerator.NamedVariable, member *types.Member, sw *generator.SnippetWriter) error {
-						// it is expected for internal and version-specific structs to have different fields
-						return nil
-					})
+					// TODO wkpo check que valid syntax generated...?
+					conversionGenerator.
+						WithMissingFieldsHandler(func(inVar, outVar conversiongenerator.NamedVariable, member *types.Member, sw *generator.SnippetWriter) error {
+							// it is expected for internal and version-specific structs to have different fields
+							return nil
+						}).
+						WithExternalConversionsHandler(func(inVar, outVar conversiongenerator.NamedVariable, sw *generator.SnippetWriter) (bool, error) {
+							if isVersionedVariable(inVar.Type, vsn) || isVersionedVariable(outVar.Type, vsn) {
+								// the conversion involves one of the versioned type, so there should
+								// be a conversion function defined for this
+								line := fmt.Sprintf("if err := %s(*%s, *%s); err != nil {",
+									conversiongenerator.ConversionFunctionName(inVar.Type.Elem, outVar.Type.Elem), inVar.Name, outVar.Name)
+								sw.Do("$.$\nreturn err\n}\n", line)
+								return true, nil
+							}
+							klog.Warningf("%s require manual conversion to external type %s", inVar.Type, outVar.Type)
+
+							return false, nil
+						})
 
 					return []generator.Generator{
 						conversionGenerator,
