@@ -20,7 +20,7 @@ func snakeCaseToPackageName(name string) string {
 // pkg to package newPkg (and same for other types referenced by t).
 // t itself remains unchanged.
 func replaceTypesPackage(t *types.Type, pkg, newPkg string) *types.Type {
-	return replaceTypesPackageRec(t, normalizePkg(pkg), normalizePkg(newPkg), make(map[*types.Type]*types.Type))
+	return recursiveReplaceTypesPackage(t, normalizePkg(pkg), normalizePkg(newPkg), make(map[*types.Type]*types.Type))
 }
 
 func normalizePkg(pkg string) string {
@@ -30,7 +30,7 @@ func normalizePkg(pkg string) string {
 	return pkg
 }
 
-func replaceTypesPackageRec(t *types.Type, pkg, newPkg string, visited map[*types.Type]*types.Type) *types.Type {
+func recursiveReplaceTypesPackage(t *types.Type, pkg, newPkg string, visited map[*types.Type]*types.Type) *types.Type {
 	if t == nil {
 		return nil
 	}
@@ -57,20 +57,20 @@ func replaceTypesPackageRec(t *types.Type, pkg, newPkg string, visited map[*type
 				Embedded:     member.Embedded,
 				CommentLines: member.CommentLines,
 				Tags:         member.Tags,
-				Type:         replaceTypesPackageRec(member.Type, pkg, newPkg, visited),
+				Type:         recursiveReplaceTypesPackage(member.Type, pkg, newPkg, visited),
 			}
 		}
 		result.Members = members
 	}
 
-	result.Elem = replaceTypesPackageRec(t.Elem, pkg, newPkg, visited)
-	result.Key = replaceTypesPackageRec(t.Key, pkg, newPkg, visited)
-	result.Underlying = replaceTypesPackageRec(t.Underlying, pkg, newPkg, visited)
+	result.Elem = recursiveReplaceTypesPackage(t.Elem, pkg, newPkg, visited)
+	result.Key = recursiveReplaceTypesPackage(t.Key, pkg, newPkg, visited)
+	result.Underlying = recursiveReplaceTypesPackage(t.Underlying, pkg, newPkg, visited)
 
 	if len(t.Methods) != 0 {
 		methods := make(map[string]*types.Type)
 		for k, v := range t.Methods {
-			methods[k] = replaceTypesPackageRec(v, pkg, newPkg, visited)
+			methods[k] = recursiveReplaceTypesPackage(v, pkg, newPkg, visited)
 		}
 		result.Methods = methods
 	}
@@ -78,7 +78,7 @@ func replaceTypesPackageRec(t *types.Type, pkg, newPkg string, visited map[*type
 	var signature *types.Signature
 	if t.Signature != nil {
 		signature = &types.Signature{
-			Receiver:     replaceTypesPackageRec(t.Signature.Receiver, pkg, newPkg, visited),
+			Receiver:     recursiveReplaceTypesPackage(t.Signature.Receiver, pkg, newPkg, visited),
 			Parameters:   replaceTypesSlicePackage(t.Signature.Parameters, pkg, newPkg, visited),
 			Results:      replaceTypesSlicePackage(t.Signature.Results, pkg, newPkg, visited),
 			Variadic:     t.Signature.Variadic,
@@ -93,7 +93,7 @@ func replaceTypesPackageRec(t *types.Type, pkg, newPkg string, visited map[*type
 func replaceTypesSlicePackage(ts []*types.Type, pkg, newPkg string, visited map[*types.Type]*types.Type) []*types.Type {
 	result := make([]*types.Type, len(ts))
 	for i, t := range ts {
-		result[i] = replaceTypesPackageRec(t, pkg, newPkg, visited)
+		result[i] = recursiveReplaceTypesPackage(t, pkg, newPkg, visited)
 	}
 	return result
 }

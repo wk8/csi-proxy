@@ -18,6 +18,7 @@ require (
 	github.com/iancoleman/strcase v0.0.0-20190422225806-e506e3ef7365
 	github.com/kubernetes-csi/csi-proxy/client v0.0.0-00010101000000-000000000000
 	github.com/pkg/errors v0.8.1
+	github.com/sergi/go-diff v1.0.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.4.0
 	google.golang.org/grpc v1.24.0

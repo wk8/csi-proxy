@@ -34,6 +34,8 @@ func buildArgs(executableName string, cliArgs []string) *args.GeneratorArgs {
 	pflagFlagSet.AddGoFlagSet(goFlagSet)
 	pflagFlagSet.Parse(cliArgs)
 
+	klog.Infof("Verbosity level set to %d", verbosityLevel())
+
 	// if no package argument, default to processing canonical API groups, under csiProxyAPIPath
 	if len(genericArgs.InputDirs) == 0 {
 		genericArgs.InputDirs = append(genericArgs.InputDirs, csiProxyAPIPath)
@@ -49,4 +51,13 @@ func buildArgs(executableName string, cliArgs []string) *args.GeneratorArgs {
 	}
 
 	return genericArgs
+}
+
+// verbosityLevel returns the current verbosity level
+func verbosityLevel() klog.Level {
+	level := klog.Level(0)
+	for klog.V(level) {
+		level++
+	}
+	return level - 1
 }
