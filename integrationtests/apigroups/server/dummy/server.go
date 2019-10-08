@@ -10,7 +10,6 @@ import (
 
 type Server struct{}
 
-// TODO wkpo auto-gen comments?
 func (s *Server) ComputeDouble(ctx context.Context, request *internal.ComputeDoubleRequest, version apiversion.Version) (*internal.ComputeDoubleResponse, error) {
 	in := request.Input64
 	out := 2 * in

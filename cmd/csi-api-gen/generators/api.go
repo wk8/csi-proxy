@@ -18,18 +18,12 @@ import (
 	"github.com/kubernetes-csi/csi-proxy/client/apiversion"
 )
 
-// TODO wkpo check bootstrap, even better write a test on it
-
-// TODO wkpo update api/README.md
-
 /*
 This file defines a gengo generator to generate all the boilerplate code API
 groups and versions need.
 
 See this repo's client/api/README.md for more context.
 */
-
-// TODO wkpo save a SHA of source files, and don't regenerate if not needed? possible?
 
 const (
 	// csiProxyRootPath is the CSI-proxy go library's root path.
@@ -358,7 +352,6 @@ func packagesForGroup(group *groupDefinition, outputBase string) generator.Packa
 					if err != nil {
 						klog.Fatalf("unable to create conversion generator: %v", err)
 					}
-					// TODO wkpo check que valid syntax generated...?
 					conversionGenerator.
 						WithMissingFieldsHandler(func(inVar, outVar conversiongenerator.NamedVariable, member *types.Member, sw *generator.SnippetWriter) error {
 							// it is expected for internal and version-specific structs to have different fields

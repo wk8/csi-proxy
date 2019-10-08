@@ -81,7 +81,6 @@ func NewVersionOrPanic(name string) Version {
 }
 
 // IsValidVersion returns true iff the input is a valid version name.
-// TODO wkpo unit tests
 func IsValidVersion(name string) bool {
 	return nameRegex.MatchString(name)
 }

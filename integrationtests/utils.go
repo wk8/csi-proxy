@@ -44,10 +44,12 @@ func close(t *testing.T, closer io.Closer) {
 	assert.Nil(t, closer.Close())
 }
 
-func recursiveDiff(t *testing.T, dir1, dir2 string) {
-	hashesDir1, err := fileHashes(dir1)
+// recursiveDiff ensures that dir1 and dir2 contain the same files, with the same contents.
+// fileSuffixesToRemove will be removed from file names, if found.
+func recursiveDiff(t *testing.T, dir1, dir2 string, fileSuffixesToRemove ...string) {
+	hashesDir1, err := fileHashes(dir1, fileSuffixesToRemove...)
 	require.Nil(t, err, "unable to get file hashes for directory %q", dir1)
-	hashesDir2, err := fileHashes(dir2)
+	hashesDir2, err := fileHashes(dir2, fileSuffixesToRemove...)
 	require.Nil(t, err, "unable to get file hashes for directory %q", dir2)
 
 	for filePath, hash1 := range hashesDir1 {
@@ -72,7 +74,7 @@ func recursiveDiff(t *testing.T, dir1, dir2 string) {
 }
 
 // fileHashes walks through dir, and returns a map mapping file paths to MD5 hashes
-func fileHashes(dir string) (map[string]string, error) {
+func fileHashes(dir string, fileSuffixesToRemove ...string) (map[string]string, error) {
 	dir = strings.ReplaceAll(dir, "/", string(os.PathSeparator))
 	hashes := make(map[string]string)
 
@@ -96,8 +98,13 @@ func fileHashes(dir string) (map[string]string, error) {
 		}
 
 		hashBytes := hasher.Sum(nil)[:16]
-		relativePath := strings.TrimPrefix(filePath, dir)
-		hashes[strings.TrimPrefix(relativePath, "/")] = hex.EncodeToString(hashBytes)
+
+		relativePath := strings.TrimPrefix(strings.TrimPrefix(filePath, dir), "/")
+		for _, suffix := range fileSuffixesToRemove {
+			relativePath = strings.TrimSuffix(relativePath, suffix)
+		}
+
+		hashes[relativePath] = hex.EncodeToString(hashBytes)
 		return nil
 	}); walkErr != nil {
 		return nil, walkErr
