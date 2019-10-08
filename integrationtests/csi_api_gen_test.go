@@ -28,6 +28,12 @@ func TestNewAPIGroup(t *testing.T) {
 	}()
 
 	// now check the output is exactly what we expect
+	// the files in expected_output have had their `.go` extension changed to `go_code` so that one
+	// can still build all subpackages in one command.
+	// If you need to regenerate them, removing the extension can be done with:
+	// ```
+	// find integrationtests/csiapigen/new_group/expected_output -name '*.go' -exec mv -v {}{,_code} \;
+	// ```
 	recursiveDiff(t, "csiapigen/new_group/expected_output", "csiapigen/new_group/actual_output")
 }
 
