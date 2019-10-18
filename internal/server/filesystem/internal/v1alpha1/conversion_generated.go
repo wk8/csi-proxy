@@ -3,9 +3,6 @@
 package v1alpha1
 
 import (
-	unsafe "unsafe"
-
-	api "github.com/kubernetes-csi/csi-proxy/client/api"
 	v1alpha1 "github.com/kubernetes-csi/csi-proxy/client/api/filesystem/v1alpha1"
 	internal "github.com/kubernetes-csi/csi-proxy/internal/server/filesystem/internal"
 )
@@ -31,8 +28,6 @@ func Convert_internal_PathExistsRequest_To_v1alpha1_PathExistsRequest(in *intern
 }
 
 func autoConvert_v1alpha1_PathExistsResponse_To_internal_PathExistsResponse(in *v1alpha1.PathExistsResponse, out *internal.PathExistsResponse) error {
-	out.Success = in.Success
-	out.CmdletError = (*api.CmdletError)(unsafe.Pointer(in.CmdletError))
 	out.Exists = in.Exists
 	return nil
 }
@@ -43,8 +38,6 @@ func Convert_v1alpha1_PathExistsResponse_To_internal_PathExistsResponse(in *v1al
 }
 
 func autoConvert_internal_PathExistsResponse_To_v1alpha1_PathExistsResponse(in *internal.PathExistsResponse, out *v1alpha1.PathExistsResponse) error {
-	out.Success = in.Success
-	out.CmdletError = (*api.CmdletError)(unsafe.Pointer(in.CmdletError))
 	out.Exists = in.Exists
 	return nil
 }
